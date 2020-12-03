@@ -7,75 +7,39 @@ library(stringr)
 
 ## Predicting new user booking. 
 
-imdb <- read.csv("IMDM_ratings.csv")
+IMDB <- read.csv("IMDM_ratings.csv")
+
+sum(duplicated(IMDB))
+
+imdb <- IMDB[!duplicated(IMDB), ]
 
 str(imdb)
 
 # 5043 rows abd 28 cols
 dim(imdb)
 
-# changing the below to factors to easily filter
-imdb$language <- as.factor(imdb$language)
-imdb$country <- as.factor(imdb$country)
-imdb$content_rating <- as.factor(imdb$content_rating)
-imdb$title_year <- as.factor(imdb$title_year)
+# What are the missing values?
+colSums(sapply(imdb, is.na))
 
-# How many movies were produced every year?
-table(imdb$title_year)
+# cleaning the movie title
+imdb$movie_title <- gsub("Â", "", as.character(factor(imdb$movie_title)))
+str_trim(imdb$movie_title, side = "right")
 
-# Most rated movies were PG-13 rated between 1983 -  2016
-ggplot(imdb, aes(x = content_rating , fill = title_year)) +
-  geom_bar() +
-  xlab("content_rating") +
-  ylab("Total Count") +
-  labs(fill = "Title Year")
+# Gross and Budget have many missing NA's as we would use these rows. 
+# We will remove the rows with NA's to make it optimal.
 
-# Out of 5043 movies - 813 is the maximum number of reviews and 1 is the least
-# Critic Reviews is right skewed 
-ggplot(aes(x = num_critic_for_reviews), data = imdb) + 
-  geom_histogram(bins = 20, color = 'red') + ggtitle('Number of reviews')
-summary(imdb$num_critic_for_reviews)
+imdb <- imdb[!is.na(imdb$gross), ]
+imdb <- imdb[!is.na(imdb$budget), ]
 
-# 1.6 min score and 9.5 is the max score
-# Scores are left skewed
-ggplot(aes(x = imdb_score), data = imdb) + 
-  geom_histogram(bins = 20, color = 'white') + ggtitle('Histogram of Scores')
-summary(imdb$imdb_score)
+# Aspect Ratio has some missing values, which will not be important for our analysis.
+imdb <- subset(imdb, select = -c(aspect_ratio))
+imdb <- subset(imdb, select = -c(color))
 
-# Most movies were produced around the 2000's with a imdb score
-ggplot(data = imdb) + 
-  geom_point(mapping = aes(x = title_year, y = imdb_score))
+# Is language in this dataset?
+table(imdb$language)
 
-# Majority of the movies are in English
-ggplot(data = imdb) + 
-  geom_bar(mapping = aes(x = language, fill = language))
+# Since most movies are in English, we can remove language.
+imdb <- subset(imdb, select = -c(language))
 
-# Number of movies in order - English, French, Spanish
-summary(imdb$language)
-
-# Which countries produced the most movies?
-
-# USA produced the most number of movies
-
-imdb %>% group_by(movie_title,country) %>%
-  summarise(mean_score = mean(imdb_score),n = n()) %>%
-  ggplot(aes(x = country, y = n, fill = country)) + 
-  geom_bar(stat = 'identity') + theme(legend.position = "none", axis.text=element_text(size=6)) +
-  coord_flip() + ggtitle('Countries by Number of Movies')
-  
-# Which countries had highest avg scores?
-
-avg_score_movie <- imdb %>% group_by(movie_title,country) %>% 
-  mutate(avg_score = mean(imdb_score))%>% select(movie_title,country,avg_score) %>% filter(avg_score > 5)
-
-head(avg_score_movie) 
-
-ggplot(data = avg_score_movie) + 
-  geom_point(mapping = aes(x = avg_score, y = country, color = avg_score))
-
-ggplot(data = avg_score_movie) + 
-  geom_bar(mapping = aes(x = country, fill = avg_score))
-
-## U.K , France and Canada had highest IMDB Average Rating
-
-
+# Adding Profit and ROI %
+imdb <- imdb %>% mutate(net_profit = gross - budget,return_on_investment = (net_profit/budget)*100)
