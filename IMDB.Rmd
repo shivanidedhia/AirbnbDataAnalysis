@@ -1,0 +1,14 @@
+---
+title: "Predicting IMBD Scores"
+author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhary, Akshita Jain"
+date: "12/20/2020"
+output: 
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## STA 9750 Final Project
