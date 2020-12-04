@@ -76,6 +76,7 @@ ggplot(data = avg_score_movie) +
 ggplot(data = avg_score_movie) + 
   geom_bar(mapping = aes(x = country, fill = avg_score))
 
-## U.K , France and Canada had highest IMDB Average Rating
+## U.K , France and Canada had highest IMDB Average Rating 
+#Testing -Akhila
 
 
