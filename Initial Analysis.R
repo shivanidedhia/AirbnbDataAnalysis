@@ -35,6 +35,8 @@ str_trim(imdb$movie_title, side = "right")
 imdb <- imdb[!is.na(imdb$gross), ]
 imdb <- imdb[!is.na(imdb$budget), ]
 
+
+
 # Aspect Ratio has some missing values, which will not be important for our analysis.
 imdb <- subset(imdb, select = -c(aspect_ratio))
 imdb <- subset(imdb, select = -c(color))
@@ -112,3 +114,24 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
 
+#Akhila
+
+#
+imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
+
+imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
+summary(imdb$num_user_reviews)
+
+ggplot(imdb, aes(x =duration, y =imdb_score))+
+  geom_point(size=2, aes(colour=num_user_reviews)) +
+  labs(title = "Duration Vs. IMDB Score and Number of User Reviews", 
+       x = "Duration", y = "IMDB Score")
+
+# The higher the duration, the more the rating. 
+# Looks like duration of the movie also factors into the ratings of the movie.
+
+# 2nd
+ggplot(aes(x = title_year, y = imdb_score), data = imdb) +
+  geom_point() + geom_smooth(method = "auto")
+
+# Older movies have a higher rating compared to new movies.
