@@ -162,10 +162,13 @@ imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
 imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
 summary(imdb$num_user_reviews)
 
-ggplot(imdb, aes(x =imdb_score, y =duration))+
-  geom_point(size=2, aes(colour=num_user_reviews)) +
+
+
+ggplot(imdb, aes(x =imdb_score, y =duration, color = num_user_reviews))+
+  geom_point(color='black', alpha = 1/5) +
+  geom_smooth() +
   labs(title = "Movie Duration comapred to the IMDB score", 
-       x = "IMDB Score", y = "Duration")
+       x = "IMDB Score", y = "Duration") 
 
 # The higher the duration, the more the rating. 
 # Looks like duration of the movie also factors into the ratings of the movie.
@@ -192,6 +195,8 @@ ggplot(aes(x=budget, y = imdb_score), data = subset(imdb, budget < 75000000),!is
 # It looks like there is uniform relationship between Budget and the IMDB Score.
 # Therefore, Budget doesn't really play an important role in the increase or decrease of IMDB Score.
 # We can conclude that Higher budget movies cannot guarantee a higher rating.
+
+# 
 
 library(tree)
 library(rpart)
