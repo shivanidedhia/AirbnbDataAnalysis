@@ -166,7 +166,7 @@ summary(imdb$num_user_reviews)
 
 ggplot(imdb, aes(x =imdb_score, y =duration, color = num_user_reviews))+
   geom_point(color='black', alpha = 1/5) +
-  geom_smooth() +
+  geom_smooth(color = 'black') +
   labs(title = "Movie Duration comapred to the IMDB score", 
        x = "IMDB Score", y = "Duration") 
 
@@ -177,6 +177,7 @@ ggplot(imdb, aes(x =imdb_score, y =duration, color = num_user_reviews))+
 #  Movies above 300 mins have few reviews but higher reviews. 
 # Less number of people watched movies longer than 300 mins, hence higher reviews.
 # movie duration must be under ~ 175 mins to recieve many reviews and a higher IMDB score
+# There is clear exponentital growth. Longer the duration, higher the score
 
 #  Year of the Movie vs IMDB Score
 ggplot(aes(x = title_year, y = imdb_score), data = imdb) +
