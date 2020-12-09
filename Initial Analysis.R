@@ -156,7 +156,7 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
 
-# Analuzing the impaction of  Movie Duration, User Reviews on IMDB Score
+# Analyzing the impaction of  Movie Duration, User Reviews on IMDB Score
 imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
 
 imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
@@ -182,7 +182,16 @@ ggplot(aes(x = title_year, y = imdb_score), data = imdb) +
 # Older movies have a higher rating compared to new movies. They also have few reviews. 
 # geom_point(alpha = 0.05)
 
-#
+# Budget vs IMDB Score
+ggplot(aes(x=budget, y = imdb_score), data = subset(imdb, budget < 75000000),!is.na(budget)) +
+  geom_jitter(alpha = 1/4) +
+  geom_smooth(method = "auto")+
+  ggtitle("Budget vs IMDB SCORE") +
+  labs(x = "Budget", y = "IMDB Score")
+
+# It looks like there is uniform relationship between Budget and the IMDB Score.
+# Therefore, Budget doesn't really play an important role in the increase or decrease of IMDB Score.
+# We can conclude that Higher budget movies cannot guarantee a higher rating.
 
 library(tree)
 library(rpart)
