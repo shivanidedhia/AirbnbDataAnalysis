@@ -114,7 +114,7 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
 
-#Akhila
+#################   Akhila  ############################
 
 #
 imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
@@ -122,16 +122,68 @@ imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
 imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
 summary(imdb$num_user_reviews)
 
-ggplot(imdb, aes(x =duration, y =imdb_score))+
+ggplot(imdb, aes(x =imdb_score, y =duration))+
   geom_point(size=2, aes(colour=num_user_reviews)) +
-  labs(title = "Duration Vs. IMDB Score and Number of User Reviews", 
-       x = "Duration", y = "IMDB Score")
+  labs(title = "Movie Duration comapred to the IMDB score", 
+       x = "IMDB Score", y = "Duration")
 
 # The higher the duration, the more the rating. 
 # Looks like duration of the movie also factors into the ratings of the movie.
+# Most movies in this data set are under 150 mins and have recieved IMDB score between 5-8.
+# Few movies beyond 250 mins have a score higher than 5.5.
+#  Movies above 300 mins have few reviews but higher reviews. 
+# Less number of people watched movies longer than 300 mins, hence higher reviews.
+# movie duration must be under ~ 175 mins to recieve many reviews and a higher IMDB score
 
 # 2nd
 ggplot(aes(x = title_year, y = imdb_score), data = imdb) +
-  geom_point() + geom_smooth(method = "auto")
+  geom_point(alpha = 1/10) + geom_smooth(method = "auto")
 
-# Older movies have a higher rating compared to new movies.
+# Older movies have a higher rating compared to new movies. They also have few reviews. 
+# geom_point(alpha = 0.05)
+
+########################## Shivani #################################
+
+library(tree)
+library(rpart)
+library(rpart.plot)
+
+# Splitting the data into test and train
+
+imdb_train_indices <- sample(1:nrow(imdb),0.8*nrow(imdb))
+
+imdb_train <- imdb %>% slice(imdb_train_indices)
+
+imdb_test <- imdb %>% slice(-imdb_train_indices)
+
+# How is imdb score related to the num of voted users compared to duration
+
+imdb_mod_1 = lm(imdb_score~num_voted_users+duration,data=imdb_train)
+summary(imdb_mod_1)
+
+# R-squared for this model is 0.2797 which is extremely poor, 
+# this shows that imdb score is not highly corelated to number of votes or duration
+# there is not a linenar relationship among the imdb score ~ num_user_review and duration
+set.seed(3)
+imdb_rpart <- rpart(imdb_score~.,data=imdb_train)
+summary(imdb_rpart)
+rpart.plot(imdb_rpart,digits = 3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
