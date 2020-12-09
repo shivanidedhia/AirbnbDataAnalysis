@@ -156,6 +156,7 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
 
+# Analuzing the impaction of  Movie Duration, User Reviews on IMDB Score
 imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
 
 imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
@@ -174,12 +175,14 @@ ggplot(imdb, aes(x =imdb_score, y =duration))+
 # Less number of people watched movies longer than 300 mins, hence higher reviews.
 # movie duration must be under ~ 175 mins to recieve many reviews and a higher IMDB score
 
-# 2nd
+#  Year of the Movie vs IMDB Score
 ggplot(aes(x = title_year, y = imdb_score), data = imdb) +
   geom_point(alpha = 1/10) + geom_smooth(method = "auto")
 
 # Older movies have a higher rating compared to new movies. They also have few reviews. 
 # geom_point(alpha = 0.05)
+
+#
 
 library(tree)
 library(rpart)
