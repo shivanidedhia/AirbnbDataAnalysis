@@ -41,6 +41,9 @@ imdb <- imdb[!is.na(imdb$budget), ]
 imdb <- subset(imdb, select = -c(aspect_ratio))
 imdb <- subset(imdb, select = -c(color))
 
+# removing some cols that will not be needed for our analysis
+
+imdb <- subset(imdb, select = -c(movie_imdb_link))
 
 ## U.K , France and Canada had highest IMDB Average Rating 
 # Is language in this dataset?
@@ -71,8 +74,6 @@ imdb$movie_facebook_likes[is.na(imdb$movie_facebook_likes)] <- round(mean(imdb$m
 # delete the blank cols in content rating as they cannot be replaced with anything reasonable
 imdb <- imdb[!(imdb$content_rating %in% ""),]
 
-view(imdb)
-
 # replacing all content_rating with mordern rating system
 imdb$content_rating[imdb$content_rating == 'M']   <- 'PG' 
 imdb$content_rating[imdb$content_rating == 'GP']  <- 'PG' 
@@ -90,7 +91,38 @@ table(imdb$country)
 
 # Data Visualizing
 
-## Add legend if needed
+# Distribution of IMDB score
+
+# There is an increase in the number of movies that have received 6 - 7 IMDB score.
+# The extreme ends of the spectrum have very few movies as expected.
+
+ggplot(aes(x=imdb_score), data = imdb) +
+  geom_histogram(binwidth = 0.2,aes(fill = ..count..)) +
+  scale_x_continuous(breaks = 0:10) +
+  ggtitle("Imdb Score Distribution") +
+  labs(x = "IMDB Score", y = "Count of Movies")
+
+# Understanding the distribution of directors and their effect on IMDB score
+
+# Grouping directors with movies greater than 10 and less than 50. 
+# The highest number of movies per director is 25. 
+imdb.directors <- data.frame (imdb %>% 
+                                  group_by(director_name) %>%
+                                  summarise(count = n())%>%
+                                  filter(count >10, count <50))
+
+ggplot(aes(x = director_name, y = count), data = imdb.directors)+
+  geom_jitter() +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  labs(title="Directors Distribution on Movies",x="Count of Movies",y="Directors")
+
+# content rating distribution
+# Movies rated R are the most in the dataset
+ggplot(aes(x = content_rating), data= subset(imdb, !is.na(content_rating))) +
+  geom_bar(aes(fill = ..count..)) +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  labs(title="Content Rating Distribution ",x="Count of Movies",y="Content Rating")
+
 
 imdb %>%
   filter(title_year %in% c(2000:2016)) %>%
@@ -113,8 +145,6 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
-
-#################   Akhila  ############################
 
 #
 imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
@@ -142,8 +172,6 @@ ggplot(aes(x = title_year, y = imdb_score), data = imdb) +
 # Older movies have a higher rating compared to new movies. They also have few reviews. 
 # geom_point(alpha = 0.05)
 
-########################## Shivani #################################
-
 library(tree)
 library(rpart)
 library(rpart.plot)
@@ -164,19 +192,25 @@ summary(imdb_mod_1)
 # R-squared for this model is 0.2797 which is extremely poor, 
 # this shows that imdb score is not highly corelated to number of votes or duration
 # there is not a linenar relationship among the imdb score ~ num_user_review and duration
+
+# This model shows duration is the most important factor for a imdb score.
+# If duration is less than 111 minutes num_critic_for_reviews higher than 162 affects the imdb score greatly
+
 set.seed(3)
-imdb_rpart <- rpart(imdb_score~.,data=imdb_train)
+imdb_rpart <- rpart(imdb_score ~ num_critic_for_reviews + duration + num_user_reviews +  budget,data=imdb_train)
 summary(imdb_rpart)
 rpart.plot(imdb_rpart,digits = 3)
 
+# Order of importance:
+# duration ---> num_critic_reviews ---> budget ---> num_user_reviews
 
+library(randomForest)
 
+imdb_rf <- randomForest(imdb_score ~ num_critic_for_reviews + duration + num_user_reviews +  budget,data= imdb_train , 
+                        ntree = 500,
+                        control = rpart.control(cp = 0.001),do.trace = 50)
 
-
-
-
-
-
+imdb_rf
 
 
 
