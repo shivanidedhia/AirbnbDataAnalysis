@@ -159,11 +159,13 @@ imdb_test <- imdb %>% slice(-imdb_train_indices)
 # How is imdb score related to the num of voted users compared to duration
 
 imdb_mod_1 = lm(imdb_score~num_voted_users+duration,data=imdb_train)
+
 summary(imdb_mod_1)
 
 # R-squared for this model is 0.2797 which is extremely poor, 
 # this shows that imdb score is not highly corelated to number of votes or duration
 # there is not a linenar relationship among the imdb score ~ num_user_review and duration
+
 set.seed(3)
 imdb_rpart <- rpart(imdb_score~.,data=imdb_train)
 summary(imdb_rpart)
@@ -201,5 +203,28 @@ ggplot(imdb, aes(x=imdb_score)) + geom_histogram(bins = 50)
 # 5 and 7.5. It means most of the movies had a good acceptance rate which is more
 # than 50%. 
 
+
+
+imdb
+
+# QUES: SHOULD WE CONVERT TO LOG BEFORE WE DO THE LINEAR REG?
+# QUES: CAN WE INCLUDE NET PROFIT AND ROI IN OUR ANALYSIS?
+
+
+# Random Forest
+
+library(randomForest)
+
+imdb
+
+
+imdb_rf <-  randomForest(imdb_score~ num_voted_users + duration + content_rating + genres + 
+                         num_critic_for_reviews, data=imdb_train,
+                         ntree = 100, importance = TRUE, do.trace = 10)
+
+summary(imdb_rf)
+
+
+rmse(imdb_rf, imdb_test)
 
 
