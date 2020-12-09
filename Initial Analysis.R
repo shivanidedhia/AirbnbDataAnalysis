@@ -116,6 +116,12 @@ ggplot(aes(x = director_name, y = count), data = imdb.directors)+
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(title="Directors Distribution on Movies",x="Count of Movies",y="Directors")
 
+# Add
+# If directors with under 20 movies - what is their average rating 
+# Does it have an impact on the imdb score 
+# directors with less movies - do they have a higher imdb score
+# directors with more movies - do they have a lower/ or higher score
+
 # content rating distribution
 # Movies rated R are the most in the dataset
 ggplot(aes(x = content_rating), data= subset(imdb, !is.na(content_rating))) +
@@ -123,6 +129,10 @@ ggplot(aes(x = content_rating), data= subset(imdb, !is.na(content_rating))) +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(title="Content Rating Distribution ",x="Count of Movies",y="Content Rating")
 
+# Add
+# if content_rating has an effect on imdb socre
+# would R rated movies have a average high imdb score
+# would PG rated movies have a average high imdb score
 
 imdb %>%
   filter(title_year %in% c(2000:2016)) %>%
@@ -146,7 +156,6 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
 
-#
 imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
 
 imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
@@ -194,16 +203,15 @@ summary(imdb_mod_1)
 # this shows that imdb score is not highly corelated to number of votes or duration
 # there is not a linenar relationship among the imdb score ~ num_user_review and duration
 
-<<<<<<< HEAD
-=======
 # This model shows duration is the most important factor for a imdb score.
 # If duration is less than 111 minutes num_critic_for_reviews higher than 162 affects the imdb score greatly
 
->>>>>>> 02248b353d01985e30dddd5a5a3acae4df5caa69
 set.seed(3)
 imdb_rpart <- rpart(imdb_score ~ num_critic_for_reviews + duration + num_user_reviews +  budget,data=imdb_train)
 summary(imdb_rpart)
 rpart.plot(imdb_rpart,digits = 3)
+
+str(imdb)
 
 # Order of importance:
 # duration ---> num_critic_reviews ---> budget ---> num_user_reviews
@@ -214,19 +222,9 @@ imdb_rf <- randomForest(imdb_score ~ num_critic_for_reviews + duration + num_use
                         ntree = 500,
                         control = rpart.control(cp = 0.001),do.trace = 50)
 
-
-
-########################## Nafis #################################
-
-
-
-
-# Chart-1
-
 install.packages("plotly")
 
 library(plotly)
-
 
 imdb %>%
   plot_ly(x = ~movie_facebook_likes, y = ~imdb_score, color = ~content_rating , mode = "markers", text = ~content_rating, alpha = 0.7, type = "scatter")
@@ -236,18 +234,11 @@ imdb %>%
 # is, the higher the number of facebook like will be. However, there are some
 # outliers as well.
 
-
-
-# Chart-2
-
 ggplot(imdb, aes(x=imdb_score)) + geom_histogram(bins = 50)
 
 # Well, this simple bar chart shows that most of the movie ratings are between
 # 5 and 7.5. It means most of the movies had a good acceptance rate which is more
 # than 50%. 
-
-
-
 
 # Random Forest
 
