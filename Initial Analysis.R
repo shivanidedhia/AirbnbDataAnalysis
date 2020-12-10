@@ -9,7 +9,6 @@ library(ggrepel)
 # What variable affects the higher IMDB score?
 
 
-## Predicting new user booking. 
 
 IMDB <- read.csv("IMDM_ratings.csv")
 
@@ -156,7 +155,7 @@ ggplot(data = melt(imdb), mapping = aes(x = value)) +
 # imdb score count
 ggplot(imdb, aes(x= imdb_score)) + geom_bar()
 
-# Analyzing the impaction of  Movie Duration, User Reviews on IMDB Score
+# Analyzing the impact on of  Movie Duration, User Reviews on IMDB Score
 imdb <- imdb[!is.na(imdb$num_user_for_reviews),]
 
 imdb$num_user_reviews<-cut(imdb$num_user_for_reviews,breaks = c(0,107,208,333,397,5100), labels = c("very few","few","middle","high","very high"))
