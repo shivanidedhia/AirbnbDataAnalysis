@@ -167,7 +167,7 @@ summary(imdb$num_user_reviews)
 ggplot(imdb, aes(x =imdb_score, y =duration, color = num_user_reviews))+
   geom_point(color='black', alpha = 1/5) +
   geom_smooth(color = 'black') +
-  labs(title = "Movie Duration comapred to the IMDB score", 
+  labs(title = "Movie Duration vs IMDB score", 
        x = "IMDB Score", y = "Duration") 
 
 # The higher the duration, the more the rating. 
