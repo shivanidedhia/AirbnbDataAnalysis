@@ -1,6 +1,6 @@
 ---
 title: "Predicting IMBD Scores"
-author: "By: Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhary, Akshita Jain"
+author: "By: Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
   pdf_document: default
   html_document: default
