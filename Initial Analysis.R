@@ -197,7 +197,6 @@ ggplot(aes(x=budget, y = imdb_score), data = subset(imdb, budget < 75000000),!is
 # Therefore, Budget doesn't really play an important role in the increase or decrease of IMDB Score.
 # We can conclude that Higher budget movies cannot guarantee a higher rating.
 
-# 
 
 library(tree)
 library(rpart)
