@@ -1,14 +1,40 @@
 ---
 title: "Predicting IMBD Scores"
-author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhary, Akshita Jain"
-date: "12/20/2020"
+author: "By: Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhary, Akshita Jain"
 output: 
   pdf_document: default
   html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE , dev = "png", dpi=300)
+options(digits = 2)
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(stringr)
+library(ggrepel)
+library(reshape2)
+library(corrgram)
+library(tree)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+library(plotly)
 ```
 
-## STA 9750 Final Project
+# STA 9750 Final Project
+
+### Introduction
+
+#### There are a lot of factors that make a movie succesful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. But, which factors play a role in their IMDB scores? 
+
+### We have the IMDB 5000 movie dataset, which has 28 variables, 5043 movies across 100 years in 66 countries. There are many varibles in the dataset such as Director, Actors, Duration. Gross, Budget, Genres, Facebook Likes, etc. Based on the movie dataset, we want to analyze which variable affects the IMDB score the most. 
+
+### Data Cleaning
+
+
+
+
