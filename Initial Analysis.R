@@ -267,11 +267,24 @@ imdb
 
 imdb_rf <-  randomForest(imdb_score~ num_voted_users + duration + content_rating + genres + 
                          num_critic_for_reviews, data=imdb_train,
-                         ntree = 100, importance = TRUE, do.trace = 10)
+                         ntree = 200, importance = TRUE, do.trace = 10)
 
 summary(imdb_rf)
 
 
 rmse(imdb_rf, imdb_test)
+
+
+if (imdb$imdb_score <= 4) { 
+  imdb$binned_score <- "bad"
+} else if (imdb$imdb_score < 7  & imdb$imdb_score > 4) {
+  imdb$binned_score <- "ok"
+} else if  (imdb$imdb_score <= 8   & imdb$imdb_score > 6) {
+  imdb$binned_score <- "good"
+} else {
+  imdb$binned_score <- "excellent"
+}
+
+view(imdb)
 
 
