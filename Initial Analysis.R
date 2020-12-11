@@ -101,6 +101,8 @@ ggplot(aes(x=imdb_score), data = imdb) +
   ggtitle("Imdb Score Distribution") +
   labs(x = "IMDB Score", y = "Count of Movies")
 
+imdb$imdb_score
+
 # Understanding the distribution of directors and their effect on IMDB score
 
 # Grouping directors with movies greater than 10 and less than 50. 
