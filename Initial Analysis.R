@@ -248,6 +248,8 @@ imdb %>%
   plot_ly(x = ~movie_facebook_likes, y = ~imdb_score, color = ~content_rating , mode = "markers", text = ~content_rating, alpha = 0.7, type = "scatter")
 
 
+# 3 FILTER FOR ONLY 100
+
 # As expected, from the chart we can see that the higher the imdb rating
 # is, the higher the number of facebook like will be. However, there are some
 # outliers as well.
@@ -265,7 +267,7 @@ library(randomForest)
 imdb
 
 
-imdb_rf <-  randomForest(imdb_score~ num_voted_users + duration + content_rating + genres + 
+imdb_rf <-  randomForest(imdb_score~ num_voted_users + duration + content_rating + 
                          num_critic_for_reviews, data=imdb_train,
                          ntree = 200, importance = TRUE, do.trace = 10)
 
@@ -273,6 +275,7 @@ summary(imdb_rf)
 
 
 rmse(imdb_rf, imdb_test)
+
 
 
 if (imdb$imdb_score <= 4) { 
@@ -286,5 +289,6 @@ if (imdb$imdb_score <= 4) {
 }
 
 view(imdb)
+
 
 
