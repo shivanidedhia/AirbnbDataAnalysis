@@ -34,7 +34,10 @@ library(plotly)
 
 Many factors make a movie succesful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on the movies success and profitability.  
 
-We have the IMDB 5000 movie dataset, which has 28 variables, 5043 movies across 100 years in 66 countries. There are many varibles in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We have the IMDB 5000 movie dataset, which has 28 variables, 5043 movies across 100 years in 66 countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+
+We will be using some of the modeling technique with associated visualization to identify the most important variables
+impacting the success and acceptance of the movie along with the profitability. 
 
 ## Hypothesis
 
@@ -102,7 +105,15 @@ imdb <- imdb %>% mutate(grouped_score =
 
 ## Data Exploration
 
-After exploring the data variables such as languages, aspect ratio, imdb movie link and color were removed to reduce bias. As many of these variables had data heavily skewed on one side.Count of movies rated above 7.5 which are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating recieved by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
+After exploring the data variables such as languages, aspect ratio, imdb movie link and color were removed to reduce bias. As many of these variables had data heavily skewed on one side.Count of movies rated above 7.5 which are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
+
+IMDB offers a scoring scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each film, series, and so on. So, this means according to this, 
+the higher the score is, the better the movie will be. 
+So, here most of the movies are between the range of 6.5 to 7.7. We can consider this as very good movies. It indicates, the acceptance of these movies are well enough among the movie audiences. 
+However, there are obviously some exceptionally phenomenal movies which are rated beyond 8 but we can see that numbers are may be couple of hundreds only. On the other side, the bar chart is very 
+skewed which indicates there are also a good number of movies which were upto the expectation of the viewers. However, in general, this is still difficult to predict the important factors behind
+these scores.
+
 
 ```{r score_distribution, warning=FALSE, echo=FALSE, out.width="75%"}
 
