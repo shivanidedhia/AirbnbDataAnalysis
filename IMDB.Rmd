@@ -4,6 +4,9 @@ author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
   pdf_document: default
   html_document: default
+  fig_width: .5
+  fig_height: .5
+  fig.align: center
 ---
 
 ```{r setup, include=FALSE}
@@ -25,15 +28,17 @@ library(randomForest)
 library(plotly)
 ```
 
-# STA 9750 Final Project
+## STA 9750 Final Project
 
 ## Introduction
 
-###### Many factors make a movie succesful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on the movies success and profitability.  
+Many factors make a movie succesful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on the movies success and profitability.  
 
-###### We have the IMDB 5000 movie dataset, which has 28 variables, 5043 movies across 100 years in 66 countries. There are many varibles in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We have the IMDB 5000 movie dataset, which has 28 variables, 5043 movies across 100 years in 66 countries. There are many varibles in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
-```{r combine and clean data, warning=FALSE, include=FALSE}
+## Hypothesis
+
+```{r combine and clean data, warning=FALSE, echo=FALSE}
 IMDB <- read.csv("IMDM_ratings.csv")
 
 imdb <- IMDB[!duplicated(IMDB), ]
@@ -47,7 +52,7 @@ imdb <- subset(imdb, select = -c(language))
 
 # Cleaning the movie title by removing the special character "Â" at the end and some whitespaces.
 imdb$movie_title <- gsub("Â", "", as.character(factor(imdb$movie_title)))
-str_trim(imdb$movie_title, side = "right")
+clean_title <- str_trim(imdb$movie_title, side = "right")
 
 # Adding profit and ROI
 imdb <- imdb %>% mutate(net_profit = gross - budget,return_on_investment = (net_profit/budget)*100)
@@ -84,41 +89,196 @@ imdb$content_rating <- factor(imdb$content_rating)
 levels(imdb$country) <- c(levels(imdb$country), "Others")
 imdb$country[(imdb$country != 'USA')&(imdb$country != 'UK')] <- 'Others' 
 imdb$country <- factor(imdb$country)
+
+imdb <- imdb %>% mutate(grouped_score =
+                     case_when(imdb_score < 4.0 ~ "bad", 
+                               imdb_score <= 6 ~ "ok",
+                               imdb_score <= 8 ~ "good",
+                               imdb_score <= 10 ~ "excellent")
+)
+
+
 ```
 
 ## Data Exploration
 
-###### After exploring the data variables such as languages, aspect ratio, imdb movie link and color were removed to reduce bias. As many of these variables had data heavily skewed on one side. 
+After exploring the data variables such as languages, aspect ratio, imdb movie link and color were removed to reduce bias. As many of these variables had data heavily skewed on one side.Count of movies rated above 7.5 which are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating recieved by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
 
-## Imdb score distribution
-
-```{r visualizing, warning=FALSE, include=FALSE}
+```{r score_distribution, warning=FALSE, echo=FALSE, out.width="75%"}
 
 ggplot(aes(x=imdb_score), data = imdb) +
   geom_histogram(binwidth = 0.2,aes(fill = ..count..)) +
   scale_x_continuous(breaks = 0:10) +
   ggtitle("Imdb Score Distribution") +
-  labs(x = "Imdb Score Distribution", y = "Number of Movies")
+  labs(x = "IMDB Score", y = "Count of Movies")
 
 ```
-###### Count of movies rated above 7.5 which are considered to be highly recommended
 
-###### Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating recieved by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
-
-```{r visualizing, warning=FALSE, include=FALSE}
+```{r imdb_score_table, warning=FALSE, echo=FALSE,out.width="75%"}
 
 imdb %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score) %>% arrange(desc(n))
 
 ```
-###### Content Rating Distribution
 
-```{r visualizing, warning=FALSE, include=FALSE}
+## Average Imdb Score by Content Rating
 
-imdb %>% group_by(content_rating) %>%
+Average score for movies by content rating is below 6.6 which is considered a poor imdb score. As per this distribution content rating does not have a strong impact on the imdb score.
+
+```{r content_rating chart, warning=FALSE, echo=FALSE,out.width="75%"}
+
+rating_imdb <- imdb %>% group_by(content_rating) %>%
   filter(!is.na(content_rating)) %>%
-  summarise(average_imdb_score = mean(imdb_score), num = n()) %>%
-  ggplot(aes(x=average_imdb_score, y = num, label = content_rating)) +
+  summarise(average_imdb_score = mean(imdb_score), num = n())
+
+  ggplot(aes(x=average_imdb_score, y = num, label = content_rating),data = rating_imdb) +
   geom_point() +
   geom_label_repel()
 
 ```
+
+
+## Understanding the distribution of directors and their effect on IMDB score
+
+Directors have been grouped by the number of movies directed. The data has been filtered to only show movies directed above  10 and below 50 remove any anomalies in the data. Directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher imdb score. 
+
+
+
+```{r directors, warning=FALSE,echo=FALSE,out.width="75%"}
+
+imdb.directors <- data.frame (imdb %>% 
+                                  group_by(director_name) %>%
+                                  summarise(count = n())%>%
+                                  filter(count >10, count <50))
+
+ggplot(aes(x = director_name, y = count), data = imdb.directors)+
+  geom_jitter() +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  labs(title="Directors Distribution on Movies",x="Directors",y="Count of Movies")
+
+
+```
+
+
+Only a handful of directors have over 15 movies directed in this data set. Steven Spielberg is the only director to have ~ 24 movies directed. The chart below shows average imdb score for directors with 15 or more directed movies. The imdb score is above 5.5 for directors with more than 15 movies. Most directors have recieved a higher imdb score that shows the number of movies directed has a slight impact on the imdb score.
+
+
+
+```{r score by director, warning=FALSE, echo=FALSE,out.width="75%"}
+
+avg_score_per_director <- data.frame (imdb %>% 
+                                  group_by(director_name) %>%
+                                  mutate(count = n(),average_imdb_score = mean(imdb_score))%>%
+                                  filter(count >14, count <50))
+                                  
+  
+
+ggplot(aes(x = director_name, y = average_imdb_score), data = avg_score_per_director)+
+  geom_point() +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  labs(title="Average Imdb Score by Director",x="Directors",y="Average Imdb Score")
+
+```
+
+
+
+## Impact of movie duration for a higher imdb score
+
+The average imdb score is shown compared to the duration of the movie. The duration of the movie increases as the imdb score increases. Duration of the movie is not a strong determinator of the imdb score but has a slight impact on the score. The number of movies rated above 7 increases as the movie duration increases.
+
+
+
+## Top 20 movies grouped by genres with the highest imdb score. 
+
+
+
+```{r movieduration, warning=FALSE, echo=FALSE, out.width="75%"}
+
+director_group <- group_by(imdb, director_name, genres)
+movie_by_director <- summarise(director_group,
+                               mean_score = mean(imdb_score))
+
+
+movie_by_director <- movie_by_director[67:4530,]
+movie_by_director <- movie_by_director[with(movie_by_director, order(-mean_score)), ]
+movie_by_director <- head(movie_by_director, 20)
+ggplot(aes(x = mean_score, y = director_name), data = movie_by_director) +
+  geom_point(aes(color = genres), size = 2) + xlab("Mean Score") + 
+  ylab("Director Name")+ theme_minimal() + ggtitle('Director, Genres & Scores')
+
+
+```
+
+
+```{r movie duration, warning=FALSE, echo=FALSE,out.width="75%"}
+
+ggplot(imdb, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
+  geom_point() +
+  labs(title = "Movie Duration and IMDB score", 
+       x = "Imdb Score", y = "Duration") 
+```
+
+
+## Impact of net profit on imdb score.
+
+Movies with a net profit over 200 million has a higher imdb rating. Net profit is one of the strong indicators of a higher imdb score. As the trend below shows higher net profits translates to a higher rating. It could be assumed that the viewrship for movies with higher net profits was higher thus recieved a higher movie rating. 
+
+
+
+```{r net profit, warning=FALSE,echo=FALSE,out.width="75%"}
+
+ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profit > 1, !is.na(net_profit))) +
+  geom_jitter() +
+  geom_smooth() +
+  labs(title = "Net Profit and IMDB score", 
+       x = " Imdb Score", y = "Net Profit in $ Million") 
+
+```
+
+
+
+## Training the model
+
+add explanation
+
+```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
+
+imdb_train_indices <- sample(1:nrow(imdb),0.8*nrow(imdb))
+
+imdb_train <- imdb %>% slice(imdb_train_indices)
+
+imdb_test <- imdb %>% slice(-imdb_train_indices)
+
+# How is imdb score related to the num of voted users compared to duration
+
+imdb_mod_1 = lm (imdb_score~ duration + director_facebook_likes + num_critic_for_reviews + budget,data=imdb_train)
+summary(imdb_mod_1)
+
+```
+```{r random forest, warning=FALSE,echo=FALSE,out.width="75%"}
+
+imdb_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 100, importance = TRUE, do.trace = 10)
+plot(imdb_rf)
+
+importance <- importance(imdb_rf)
+importance
+varImportance <- data.frame(Variables = row.names(importance), 
+                            Importance = round(importance[ ,'IncNodePurity'],2))
+
+# Create a rank variable based on importance
+rankImportance <- varImportance %>%
+  mutate(Rank = paste0('#',dense_rank(desc(Importance))))
+
+# Use ggplot2 to visualize the relative importance of variables
+ggplot(rankImportance, aes(x = reorder(Variables, Importance), 
+                           y = Importance, fill = Importance)) +
+  geom_bar(stat='identity') + 
+  geom_text(aes(x = Variables, y = 0.5, label = Rank),
+            hjust=0, vjust=0.55, size = 4, colour = 'red') +
+  labs(x = 'Variables') +
+  coord_flip()
+
+```
+
+
+
+
