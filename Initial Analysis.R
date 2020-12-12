@@ -248,6 +248,8 @@ imdb %>%
   plot_ly(x = ~movie_facebook_likes, y = ~imdb_score, color = ~content_rating , mode = "markers", text = ~content_rating, alpha = 0.7, type = "scatter")
 
 
+# 3 FILTER FOR ONLY 100
+
 # As expected, from the chart we can see that the higher the imdb rating
 # is, the higher the number of facebook like will be. However, there are some
 # outliers as well.
@@ -265,9 +267,9 @@ library(randomForest)
 imdb
 
 
-imdb_rf <-  randomForest(imdb_score~ num_voted_users + duration + content_rating + genres + 
+imdb_rf <-  randomForest(imdb_score~ num_voted_users + duration + content_rating + 
                          num_critic_for_reviews, data=imdb_train,
-                         ntree = 100, importance = TRUE, do.trace = 10)
+                         ntree = 200, importance = TRUE, do.trace = 10)
 
 summary(imdb_rf)
 
@@ -275,29 +277,18 @@ summary(imdb_rf)
 rmse(imdb_rf, imdb_test)
 
 
-# adding binned score
-# less than 4, 4~6, 6~8 and 8~10, which represents bad, OK, good and excellent respectively.
 
-imdb$binned_score <- NA #initialise
-
-if (imdb$imdb_score < 4.0) { 
+if (imdb$imdb_score <= 4) { 
   imdb$binned_score <- "bad"
-} else if (imdb$imdb_score < 7.0  && imdb$imdb_score > 3.0) {
+} else if (imdb$imdb_score < 7  & imdb$imdb_score > 4) {
   imdb$binned_score <- "ok"
-} else if (imdb$imdb_score <= 8.0 && imdb$imdb_score > 6.0) {
+} else if  (imdb$imdb_score <= 8   & imdb$imdb_score > 6) {
   imdb$binned_score <- "good"
 } else {
   imdb$binned_score <- "excellent"
 }
 
-imdb$binned_score
-imdb <- subset(imdb, select = -c(binned_score))
-
 view(imdb)
 
-imdb <- imdb %>% mutate(grouped_score =
-                     case_when(imdb_score < 4.0 ~ "bad", 
-                               imdb_score <= 6 ~ "ok",
-                               imdb_score <= 8 ~ "good",
-                               imdb_score <= 10 ~ "excellent")
-)
+
+
