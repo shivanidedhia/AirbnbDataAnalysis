@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  pdf_document: default
   html_document: default
+  pdf_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -118,7 +118,7 @@ these scores.
 ```{r score_distribution, warning=FALSE, echo=FALSE, out.width="75%"}
 
 ggplot(aes(x=imdb_score), data = imdb) +
-  geom_histogram(binwidth = 0.2,aes(fill = ..count..)) +
+  geom_histogram(binwidth = 0.2,aes(fill = ..count..),colour="white",fill="#f3ce13") +
   scale_x_continuous(breaks = 0:10) +
   ggtitle("Imdb Score Distribution") +
   labs(x = "IMDB Score", y = "Count of Movies")
@@ -245,7 +245,7 @@ Movies with a net profit over 200 million has a higher imdb rating. Net profit i
 ```{r net profit, warning=FALSE,echo=FALSE,out.width="75%"}
 
 ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profit > 1, !is.na(net_profit))) +
-  geom_jitter() +
+  geom_jitter(shape = 21, fill = '#f3ce13') +
   geom_smooth() +
   labs(title = "Net Profit and IMDB score", 
        x = " Imdb Score", y = "Net Profit in $ Million") 
@@ -256,7 +256,7 @@ ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profi
 
 ## Training the model
 
-add explanation
+The linear model below shows number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared if .27 is extremely low which suggests the relationship between these variables is not linear. Even though they have a strong impact on the imdb score. 
 
 ```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
 
@@ -268,11 +268,22 @@ imdb_test <- imdb %>% slice(-imdb_train_indices)
 
 # How is imdb score related to the num of voted users compared to duration
 
-imdb_mod_1 = lm (imdb_score~ duration + director_facebook_likes + num_critic_for_reviews + budget,data=imdb_train)
+imdb_mod_1 = lm (imdb_score~ duration + num_voted_users + num_critic_for_reviews + movie_facebook_likes,data=imdb_train)
 summary(imdb_mod_1)
 
 ```
+
+
+## Random Forest to understand the variable that has the most impact on the imdb score
+
+
+
+
+
+
 ```{r random forest, warning=FALSE,echo=FALSE,out.width="75%"}
+
+imdb_train <- subset(imdb_train, select = -c(grouped_score))
 
 imdb_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 100, importance = TRUE, do.trace = 10)
 plot(imdb_rf)
@@ -289,13 +300,18 @@ rankImportance <- varImportance %>%
 # Use ggplot2 to visualize the relative importance of variables
 ggplot(rankImportance, aes(x = reorder(Variables, Importance), 
                            y = Importance, fill = Importance)) +
-  geom_bar(stat='identity') + 
+  geom_bar(stat='identity', fill = "#f3ce13") + 
   geom_text(aes(x = Variables, y = 0.5, label = Rank),
-            hjust=0, vjust=0.55, size = 4, colour = 'red') +
+            hjust=0, vjust=0.55, size = 4, colour = 'black') +
   labs(x = 'Variables') +
   coord_flip()
 
 ```
+
+
+# Conclusion
+
+Random Forest took into consideration all the variables from the dataset to understand their impact on the imdb score. Number of voted users is the most important variable to a high imdb score. Followed by duration and facebook like received by the movie. It was surprising to see, actors and directors name were among the least impactful. As one would think directors and actors bring in publicity leading to a higher viewership. 
 
 
 
