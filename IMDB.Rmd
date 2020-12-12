@@ -109,7 +109,7 @@ After exploring the data variables such as languages, aspect ratio, imdb movie l
 
 IMDB offers a scoring scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each film, series, and so on. So, this means according to this, 
 the higher the score is, the better the movie will be. 
-So, here most of the movies are between the range of 6.5 to 7.7. We can consider this as very good movies. It indicates, the acceptance of these movies are well enough among the movie audiences. 
+So, here most of the movies are between the range of 6.5 to 7.7. We can consider this as good/very good movies. It indicates, the acceptance of these movies are well enough among the movie audiences. 
 However, there are obviously some exceptionally phenomenal movies which are rated beyond 8 but we can see that numbers are may be couple of hundreds only. On the other side, the bar chart is very 
 skewed which indicates there are also a good number of movies which were upto the expectation of the viewers. However, in general, this is still difficult to predict the important factors behind
 these scores.
@@ -125,6 +125,9 @@ ggplot(aes(x=imdb_score), data = imdb) +
 
 ```
 
+
+
+
 ```{r imdb_score_table, warning=FALSE, echo=FALSE,out.width="75%"}
 
 imdb %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score) %>% arrange(desc(n))
@@ -134,6 +137,9 @@ imdb %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score)
 ## Average Imdb Score by Content Rating
 
 Average score for movies by content rating is below 6.6 which is considered a poor imdb score. As per this distribution content rating does not have a strong impact on the imdb score.
+
+Content rating basically tells us about the age group of people who should watch these movies. Content rating does not have strng influence on the imdb score, however, we can see that most of the content ratings are in the range of
+6.5 to 7.5. But, there are some outliers categories which are beyond this range. So, it means there is a possibility that these ratings are com9ng from different age groups but we cannot confirm this certainlt with this data. R and PG-13 have the most number of movies which indicates most of the movies are not for under age people but which makes it more interesting is the imdb score of these movies are also very poor and below average. To summarize, a big chank of the movies are restricted ones with poor imdb score.
 
 ```{r content_rating chart, warning=FALSE, echo=FALSE,out.width="75%"}
 
@@ -152,6 +158,7 @@ rating_imdb <- imdb %>% group_by(content_rating) %>%
 
 Directors have been grouped by the number of movies directed. The data has been filtered to only show movies directed above  10 and below 50 remove any anomalies in the data. Directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher imdb score. 
 
+According to the below distribution, even after filtering, the number of movies for most of the directors are between 10 to 15, few are in the range of 15 to 20 and rest two are absolutely outliers. This indicates that in this time frame, the most naturalistic production of movies by the directors are between 10 to 15 range. The rational can be budget, resources or time constraints etc.
 
 
 ```{r directors, warning=FALSE,echo=FALSE,out.width="75%"}
