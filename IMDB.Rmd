@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  html_document: default
   pdf_document: default
+  html_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -187,6 +187,28 @@ The average imdb score is shown compared to the duration of the movie. The durat
 
 
 
+## Top 20 movies grouped by genres with the highest imdb score. 
+
+
+
+```{r movieduration, warning=FALSE, echo=FALSE, out.width="75%"}
+
+director_group <- group_by(imdb, director_name, genres)
+movie_by_director <- summarise(director_group,
+                               mean_score = mean(imdb_score))
+
+
+movie_by_director <- movie_by_director[67:4530,]
+movie_by_director <- movie_by_director[with(movie_by_director, order(-mean_score)), ]
+movie_by_director <- head(movie_by_director, 20)
+ggplot(aes(x = mean_score, y = director_name), data = movie_by_director) +
+  geom_point(aes(color = genres), size = 2) + xlab("Mean Score") + 
+  ylab("Director Name")+ theme_minimal() + ggtitle('Director, Genres & Scores')
+
+
+```
+
+
 ```{r movie duration, warning=FALSE, echo=FALSE,out.width="75%"}
 
 ggplot(imdb, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
@@ -216,6 +238,7 @@ ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profi
 
 ## Training the model
 
+add explanation
 
 ```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
 
@@ -231,14 +254,31 @@ imdb_mod_1 = lm (imdb_score~ duration + director_facebook_likes + num_critic_for
 summary(imdb_mod_1)
 
 ```
+```{r random forest, warning=FALSE,echo=FALSE,out.width="75%"}
 
-```{r}
+imdb_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 100, importance = TRUE, do.trace = 10)
+plot(imdb_rf)
 
-set.seed(51)
-tree_imdb <- rpart(grouped_score ~ . -imdb_score, data = imdb_train, method = "class", 
-               cp = 0.00001, minsplit = 5, xval = 5)
-printcp(tree_imdb)
+importance <- importance(imdb_rf)
+importance
+varImportance <- data.frame(Variables = row.names(importance), 
+                            Importance = round(importance[ ,'IncNodePurity'],2))
+
+# Create a rank variable based on importance
+rankImportance <- varImportance %>%
+  mutate(Rank = paste0('#',dense_rank(desc(Importance))))
+
+# Use ggplot2 to visualize the relative importance of variables
+ggplot(rankImportance, aes(x = reorder(Variables, Importance), 
+                           y = Importance, fill = Importance)) +
+  geom_bar(stat='identity') + 
+  geom_text(aes(x = Variables, y = 0.5, label = Rank),
+            hjust=0, vjust=0.55, size = 4, colour = 'red') +
+  labs(x = 'Variables') +
+  coord_flip()
+
 ```
+
 
 
 
