@@ -134,12 +134,12 @@ imdb %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score)
 
 ```
 
-## Average Imdb Score by Content Rating
+## Impact of content rating on imdb score
 
 Average score for movies by content rating is below 6.6 which is considered a poor imdb score. As per this distribution, content rating does not have a strong impact on the imdb score.
 
-Content rating basically tells us about the age group of people who should watch these movies. Content rating does not have strng influence on the imdb score, however, we can see that most of the content ratings are in the range of
-6.5 to 7.5. But, there are some outliers categories which are beyond this range. So, it means there is a possibility that these ratings are com9ng from different age groups but we cannot confirm this certainlt with this data. R and PG-13 have the most number of movies which indicates most of the movies are not for under age people but which makes it more interesting is the imdb score of these movies are also very poor and below average. To summarize, a big chank of the movies are restricted ones with poor imdb score.
+Content rating basically tells us about the age group of people who should watch these movies. Content rating does not have strong influence on the imdb score. However, we can see that most of the content ratings are in the range of
+6.5 to 7.5. But, there are some outlier categories which are beyond this range. So, it means there is a possibility that these ratings are coming from different age groups but we cannot confirm this certainly with this data. R and PG-13 have the most number of movies which indicates most of the movies are not for under age people. What makes it more interesting is the imdb score of these movies are also very poor and below average. To summarize, a big chunk of the movies are the restricted ones with poor imdb score.
 
 ```{r content_rating chart, warning=FALSE, echo=FALSE,out.width="75%"}
 
@@ -156,7 +156,7 @@ rating_imdb <- imdb %>% group_by(content_rating) %>%
 
 ## Understanding the distribution of directors and their effect on IMDB score
 
-Directors have been grouped by the number of movies directed. The data has been filtered to only show movies directed above  10 and below 50 remove any anomalies in the data. Directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher imdb score. 
+Directors have been grouped by the number of movies directed. The data has been filtered to only show movies directed above 10 and below 50 to remove any anomalies in the data. Directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher imdb score. 
 
 According to the below distribution, even after filtering, the number of movies for most of the directors are between 10 to 15, few are in the range of 15 to 20 and rest two are absolutely outliers. This indicates that in this time frame, the most naturalistic production of movies by the directors are between 10 to 15 range. The rational can be budget, resources or time constraints etc.
 
@@ -177,7 +177,7 @@ ggplot(aes(x = director_name, y = count), data = imdb.directors)+
 ```
 
 
-Only a handful of directors have over 15 movies directed in this data set. Steven Spielberg is the only director to have ~ 24 movies directed. The chart below shows average imdb score for directors with 15 or more directed movies. The imdb score is above 5.5 for directors with more than 15 movies. Most directors have received a higher imdb score that shows the number of movies directed has a slight impact on the imdb score.
+Only a handful of directors have over 15 movies directed in this data set. Steven Spielberg is the only director to have ~ 24 movies directed. The chart below shows the average imdb score for directors with 15 or more directed movies. The imdb score is above 5.5 for directors with more than 15 movies. Most directors have received a higher imdb score that shows the number of movies directed has a slight impact on the imdb score.
 
 In the below chart, we are observing the average imdb score for the directors who has movies between 15 to 49. We see most of the averages lies between 6.75 to 7.75. This tells us the average of the score has similar trend for this group of directors. However, there is an outlier as well.
 
@@ -201,7 +201,7 @@ ggplot(aes(x = director_name, y = average_imdb_score), data = avg_score_per_dire
 
 ## Impact of movie duration for a higher imdb score
 
-The average imdb score is shown compared to the duration of the movie. The duration of the movie increases as the imdb score increases. Duration of the movie is not a strong determinator of the imdb score but has a slight impact on the score. The number of movies rated above 7 increases as the movie duration increases.
+The average imdb score is shown compared to the duration of the movie. The duration of the movie increases as the imdb score increases. Duration of the movie seems like it is one of the impactful factors that affect the imdb score. The number of movies rated above 7 increases as the movie duration increases.
 
 
 
@@ -238,9 +238,9 @@ ggplot(imdb, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
 
 ## Impact of net profit on imdb score.
 
-Movies with a net profit over 200 million has a higher imdb rating. Net profit is one of the strong indicators of a higher imdb score. As the trend below shows higher net profits translates to a higher rating. It could be assumed that the viewrship for movies with higher net profits was higher thus recieved a higher movie rating. 
+Movies with a net profit over 200 million have a higher imdb rating. Net profit is one of the strong indicators of a higher imdb score. As the trend below shows higher net profits translates to a higher rating. It could be assumed that the viewership for movies with higher net profits was higher and thus, received a higher movie rating. 
 
-Technically, the movies with higher imdb score should generate higher net profit. But this is not true always. There are many movies who has very good imdb score but they did not generate much profit. So, imdb score cannot be a sole factor to consider the net profit. Sometimes, this score can be litte confusing as well.
+Technically, the movies with higher imdb score should generate higher net profit. But this is not always true. There are many movies that have very good imdb score but did not generate much profit. So, imdb score cannot be a sole factor to consider the net profit. Sometimes, this score can be litte confusing as well.
 
 
 
@@ -258,9 +258,9 @@ ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profi
 
 ## Training the model
 
-In order to get the most important variables, we are diving the dataset into two. The 80% of the data are considered as training dataset while the rest 20% are used for testing purpose. 
+In order to get the most important variables, we are dividing the dataset into two. 80% of the data is divided as training dataset while the rest 20% is used for testing. 
 
-The linear model below shows number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared if .27 is extremely low which suggests the relationship between these variables is not linear. Even though they have a strong impact on the imdb score. 
+The linear model below shows that the number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared 0f 0.27 is extremely low which suggests the relationship between these variables is not linear even though they have a strong impact on the imdb score. 
 
 ```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
 
@@ -278,9 +278,9 @@ summary(imdb_mod_1)
 ```
 
 
-## Random Forest to understand the variable that has the most impact on the imdb score
+## Random Forest to determine the variable that has the most impact on the imdb score
 
-We will be suing the random forest to identify the most important variables. For the sake of our project, we are building a random forest with 100 trees. We are using all variables for now so that we wont miss anything. The model will be conducted on the training data set. 
+We will be creating a random forest to identify the most important variables. For this project, we are building a random forest with 100 trees using all the variables. The model will be conducted on the training dataset. 
 
 
 
@@ -313,15 +313,15 @@ ggplot(rankImportance, aes(x = reorder(Variables, Importance),
 ```
 
 
-So after running the above codes and implementing these on a chart, we can see that the most important variable is the number of voter user. The reason is quite obvious because the rating only generates when people vote or give reviews for the movies. There might be a good number of people who avoid giving reviews. But there are also a good number of people who vote for the best movies which is one of the perfect factors while calculating the imdb score. Second most important factor is the duration of the movies. This is quite interesting because this is not something which is easily understandable, however the logical rationale could be the long hours movies are generally high budgeted ones as well with more reknowned casts. So, probably the quality of the movies with longer duration are better than the other ones. The next factor is the facebook like. This is actually a difficult predictor to assume however, we can say that people give like in facebook when the enjoy something. So, they might have a tendency to provide good imdb rating as well.
+We can see that the most important variable is the number of voted users. The reason is quite obvious because the rating only generates when people vote or give reviews for the movies. There might be a good number of people who don't giving reviews. But, there is also a good number of people who vote for their favorite movies which is used to calculate the imdb score. Second most important factor is the duration of the movies. This is quite interesting because this is not something which is easily guessed. However, the logical rationale behind this could be that the long hours movies are generally high budgeted ones with a renowned cast. Therefore, the quality of the movies with longer duration are usually better. The next factor is the facebook likes. Even though this factor is a difficult predictor to assume, we can say that people likes something on facebook when they truly enjoy something. So, they might have a tendency to provide good imdb rating as well.
 
-Next three variables are close to each other and these are budget, genres and number of user reviews. A high budgeted movie will typically have a tendency to get high imdb scores because they are usually created with lots of resourses and best technical support with a very good story. Genres also have an impact because some genres are more attractive to users than others. Typically, action and thriller movies are more preferred to many viewers. For obvious reasons, number of user reviews are important. These users directly rate the movies in the imdb site. So, certainly this will be one of the most important factors.
+The importance of next three variables, budget, genres and number of user reviews, is very close. A high budgeted movie will typically have a tendency to get high imdb scores because they are usually created with with a lot of hype and promotion. Genres also have an impact because some genres are more attractive to users than others. Typically, action and thriller movies are preferred to many viewers. For obvious reasons, number of user reviews are important. These users directly rate the movies on the imdb website. So, certainly this will be one of the most important factors.
 
 
 
 # Conclusion
 
-Random Forest took into consideration all the variables from the dataset to understand their impact on the imdb score. Number of voted users is the most important variable to a high imdb score. Followed by duration and facebook like received by the movie. It was surprising to see, actors and directors name were among the least impactful. As one would think directors and actors bring in publicity leading to a higher viewership. 
+Random Forest took into consideration all the variables from the dataset to understand their impact on the imdb score. Number of voted users is the most important variable for a high imdb score. Followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were amoong the least impactful factors as one would think directors and actors bring in publicity leading to a higher viewership. 
 
 
 
