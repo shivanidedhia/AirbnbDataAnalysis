@@ -39,8 +39,6 @@ We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-d
 We will be using some of the modeling techniques with associated visualizations to identify the most important variables
 that impact the success and ratings of the movie along with the profitability. 
 
-## Hypothesis
-
 ```{r combine and clean data, warning=FALSE, echo=FALSE}
 IMDB <- read.csv("IMDM_ratings.csv")
 
@@ -93,13 +91,6 @@ levels(imdb$country) <- c(levels(imdb$country), "Others")
 imdb$country[(imdb$country != 'USA')&(imdb$country != 'UK')] <- 'Others' 
 imdb$country <- factor(imdb$country)
 
-imdb <- imdb %>% mutate(grouped_score =
-                     case_when(imdb_score < 4.0 ~ "bad", 
-                               imdb_score <= 6 ~ "ok",
-                               imdb_score <= 8 ~ "good",
-                               imdb_score <= 10 ~ "excellent")
-)
-
 
 ```
 
@@ -120,7 +111,7 @@ these scores.
 ggplot(aes(x=imdb_score), data = imdb) +
   geom_histogram(binwidth = 0.2,aes(fill = ..count..),colour="white",fill="#f3ce13") +
   scale_x_continuous(breaks = 0:10) +
-  ggtitle("Imdb Score Distribution") +
+  ggtitle("IMDB Score Distribution") +
   labs(x = "IMDB Score", y = "Count of Movies")
 
 ```
@@ -149,7 +140,9 @@ rating_imdb <- imdb %>% group_by(content_rating) %>%
 
   ggplot(aes(x=average_imdb_score, y = num, label = content_rating),data = rating_imdb) +
   geom_point() +
-  geom_label_repel()
+  geom_label_repel() +
+  ggtitle("Average IMDB Score by Rating") +
+  labs(x = "Average IMDB Score", y = "Count of Movies")
 
 ```
 
@@ -211,7 +204,7 @@ The average imdb score is shown compared to the duration of the movie. The durat
 
 ```{r movieduration, warning=FALSE, echo=FALSE, out.width="75%"}
 
-director_group <- group_by(imdb, director_name, genres)
+director_group <- group_by(imdb, director_name, num_user_for_reviews)
 movie_by_director <- summarise(director_group,
                                mean_score = mean(imdb_score))
 
@@ -220,10 +213,16 @@ movie_by_director <- movie_by_director[67:4530,]
 movie_by_director <- movie_by_director[with(movie_by_director, order(-mean_score)), ]
 movie_by_director <- head(movie_by_director, 20)
 ggplot(aes(x = mean_score, y = director_name), data = movie_by_director) +
-  geom_point(aes(color = genres), size = 2) + xlab("Mean Score") + 
-  ylab("Director Name")+ theme_minimal() + ggtitle('Director, Genres & Scores')
+  geom_point(aes(color = num_user_for_reviews), size = 2) + xlab("Average IMDB Score") + 
+  ylab("Director Name")+ theme_minimal() + ggtitle('Director, User Reviews & Scores')
 
 
+```
+```{r user reviews, warning=FALSE, echo=FALSE, out.width="75%"}
+user <- filter(imdb,num_user_for_reviews <= 3000)
+ggplot(data = user, mapping = aes(x = imdb_score, y = num_user_for_reviews)) + geom_point() + facet_wrap( ~ country)+
+   xlab("IMDB Score") + 
+  ylab("Number of User Reviews")+ theme_minimal() + ggtitle('Number of User Reviews by Country')
 ```
 
 
@@ -236,11 +235,11 @@ ggplot(imdb, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
 ```
 
 
-## Impact of net profit on imdb score.
+## Impact of net profit on IMDB score.
 
-Movies with a net profit over 200 million have a higher imdb rating. Net profit is one of the strong indicators of a higher imdb score. As the trend below shows higher net profits translates to a higher rating. It could be assumed that the viewership for movies with higher net profits was higher and thus, received a higher movie rating. 
+Movies with a net profit over 200 million have a higher IMDB rating. Net profit is one of the strong indicators of a higher IMDB score. As the trend below shows higher net profits translates to a higher rating. It could be assumed that the viewership for movies with higher net profits was higher and thus, received a higher movie rating. 
 
-Technically, the movies with higher imdb score should generate higher net profit. But this is not always true. There are many movies that have very good imdb score but did not generate much profit. So, imdb score cannot be a sole factor to consider the net profit. Sometimes, this score can be litte confusing as well.
+Technically, the movies with higher IMDB score should generate higher net profit. But this is not always true. There are many movies that have very good IMDB score but did not generate much profit. So, IMDB score cannot be a sole factor to consider the net profit. Sometimes, this score can be litte confusing as well.
 
 
 
@@ -255,12 +254,13 @@ ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profi
 ```
 
 
-
 ## Training the model
 
 In order to get the most important variables, we are dividing the dataset into two. 80% of the data is divided as training dataset while the rest 20% is used for testing. 
 
 The linear model below shows that the number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared 0f 0.27 is extremely low which suggests the relationship between these variables is not linear even though they have a strong impact on the imdb score. 
+
+
 
 ```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
 
@@ -280,20 +280,17 @@ summary(imdb_mod_1)
 
 ## Random Forest to determine the variable that has the most impact on the imdb score
 
-We will be creating a random forest to identify the most important variables. For this project, we are building a random forest with 100 trees using all the variables. The model will be conducted on the training dataset. 
+We will be creating a random forest to identify the most important variables. For this project, we are building a random forest with 500 trees using all the variables. The model will be conducted on the training dataset. 
 
 
 
 
 ```{r random forest, warning=FALSE,echo=FALSE,out.width="75%"}
 
-imdb_train <- subset(imdb_train, select = -c(grouped_score))
-
-imdb_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 100, importance = TRUE, do.trace = 10)
-plot(imdb_rf)
+imdb_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 500, importance = TRUE, do.trace = 50)
 
 importance <- importance(imdb_rf)
-importance
+
 varImportance <- data.frame(Variables = row.names(importance), 
                             Importance = round(importance[ ,'IncNodePurity'],2))
 
