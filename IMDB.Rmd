@@ -32,12 +32,12 @@ library(plotly)
 
 ## Introduction
 
-Many factors make a movie succesful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on the movies success and profitability.  
+Many factors make a movie successful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on a movie's success and profitability.  
 
-We have the IMDB 5000 movie dataset, which has 28 variables, 5043 movies across 100 years in 66 countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-data), which has 28 variables, 5043 movies across 100 years in 66 countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
-We will be using some of the modeling technique with associated visualization to identify the most important variables
-impacting the success and acceptance of the movie along with the profitability. 
+We will be using some of the modeling techniques with associated visualizations to identify the most important variables
+that impact the success and acceptance of the movie along with the profitability. 
 
 ## Hypothesis
 
