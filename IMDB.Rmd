@@ -37,7 +37,7 @@ Many factors make a movie successful and profitable. Some of the factors include
 We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-data), which has 28 variables, 5043 movies across 100 years in 66 countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
 We will be using some of the modeling techniques with associated visualizations to identify the most important variables
-that impact the success and acceptance of the movie along with the profitability. 
+that impact the success and ratings of the movie along with the profitability. 
 
 ## Hypothesis
 
@@ -105,7 +105,7 @@ imdb <- imdb %>% mutate(grouped_score =
 
 ## Data Exploration
 
-After exploring the data variables such as languages, aspect ratio, imdb movie link and color were removed to reduce bias. As many of these variables had data heavily skewed on one side.Count of movies rated above 7.5 which are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
+After exploring the data variables, languages, aspect ratio, imdb movie link and color, we removed the 4 variables to reduce bias in the data. These variables had data heavily skewed on one side. Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
 
 IMDB offers a scoring scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each film, series, and so on. So, this means according to this, 
 the higher the score is, the better the movie will be. 
@@ -136,7 +136,7 @@ imdb %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score)
 
 ## Average Imdb Score by Content Rating
 
-Average score for movies by content rating is below 6.6 which is considered a poor imdb score. As per this distribution content rating does not have a strong impact on the imdb score.
+Average score for movies by content rating is below 6.6 which is considered a poor imdb score. As per this distribution, content rating does not have a strong impact on the imdb score.
 
 Content rating basically tells us about the age group of people who should watch these movies. Content rating does not have strng influence on the imdb score, however, we can see that most of the content ratings are in the range of
 6.5 to 7.5. But, there are some outliers categories which are beyond this range. So, it means there is a possibility that these ratings are com9ng from different age groups but we cannot confirm this certainlt with this data. R and PG-13 have the most number of movies which indicates most of the movies are not for under age people but which makes it more interesting is the imdb score of these movies are also very poor and below average. To summarize, a big chank of the movies are restricted ones with poor imdb score.
