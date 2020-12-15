@@ -31,18 +31,22 @@ library(modelr)
 
 ## STA 9750 Final Project
 
+
+## Hypothesis
+
+```{r introduction, warning=FALSE, echo=FALSE}
+IMDB <- read.csv("IMDM_ratings.csv")
+```
 ## Introduction
 
 Many factors make a movie successful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on a movie's success and profitability.  
 
-We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-data), which has 28 variables, 5043 movies across 100 years in 66 countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-data), which has `r ncol(IMDB)` variables, `r dim(IMDB)[1]` movies across 100 years in `r n_distinct(IMDB$country)` countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
 We will be using some of the modeling techniques with associated visualizations to identify the most important variables
 that impact the success and ratings of the movie along with the profitability. 
 
 ```{r combine and clean data, warning=FALSE, echo=FALSE}
-IMDB <- read.csv("IMDM_ratings.csv")
-
 imdb <- IMDB[!duplicated(IMDB), ]
 imdb <- imdb[!is.na(imdb$gross), ]
 imdb <- imdb[!is.na(imdb$budget), ]
@@ -94,6 +98,7 @@ imdb$country <- factor(imdb$country)
 
 
 ```
+
 
 ## Data Exploration
 
