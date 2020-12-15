@@ -266,7 +266,7 @@ ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profi
 
 In order to get the most important variables, we are dividing the dataset into two. 80% of the data is divided as training dataset while the rest 20% is used for testing. 
 
-The linear model below shows that the number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared 0f 0.27 is extremely low which suggests the relationship between these variables is not linear even though they have a strong impact on the imdb score. 
+The linear model below shows that the number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared of 0.28 is extremely low which suggests the relationship between these variables is not linear even though they have a strong impact on the imdb score. 
 
 
 
