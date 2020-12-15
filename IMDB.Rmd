@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  pdf_document: default
   html_document: default
+  pdf_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -104,7 +104,7 @@ imdb$country <- factor(imdb$country)
 
 After cleaning up the data, we are now left with `r ncol(imdb)` variables and `r nrow(imdb)` rows. 
 
-After exploring the data variables, languages, aspect ratio, imdb movie link and color, we removed the 4 variables to reduce bias in the data. These variables had data heavily skewed on one side. Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
+After exploring the data variables, languages, aspect ratio, imdb movie link and color, we removed the 4 variables to reduce bias in the data. These variables had data heavily skewed on one side. Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is `r max(imdb$imdb_score)`. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
 
 IMDB offers a scoring scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each film, series, and so on. So, this means according to this, 
 the higher the score is, the better the movie will be. 
