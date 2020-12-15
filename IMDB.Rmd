@@ -117,7 +117,7 @@ these scores.
 ```{r score_distribution, warning=FALSE, echo=FALSE, out.width="75%"}
 
 ggplot(aes(x=imdb_score), data = imdb) +
-  geom_histogram(binwidth = 0.2,aes(fill = ..count..),colour="white",fill="#f3ce13") +
+  geom_histogram(binwidth = 0.2,aes(fill = ..count..),colour="white",fill="#DAA520") +
   scale_x_continuous(breaks = 0:10) +
   ggtitle("IMDB Score Distribution") +
   labs(x = "IMDB Score", y = "Count of Movies")
@@ -147,7 +147,7 @@ rating_imdb <- imdb %>% group_by(content_rating) %>%
   summarise(average_imdb_score = mean(imdb_score), num = n())
 
   ggplot(aes(x=average_imdb_score, y = num, label = content_rating),data = rating_imdb) +
-  geom_point() +
+  geom_point(color="#DAA520") +
   geom_label_repel() +
   ggtitle("Average IMDB Score by Rating") +
   labs(x = "Average IMDB Score", y = "Count of Movies")
@@ -170,7 +170,7 @@ imdb.directors <- data.frame (imdb %>%
                                   filter(count >10, count <50))
 
 ggplot(aes(x = director_name, y = count), data = imdb.directors)+
-  geom_jitter() +
+  geom_jitter(color="#DAA520") +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(title="Directors Distribution on Movies",x="Directors",y="Count of Movies")
 
@@ -192,7 +192,7 @@ avg_score_per_director <- data.frame (imdb %>%
   
 
 ggplot(aes(x = director_name, y = average_imdb_score), data = avg_score_per_director)+
-  geom_point() +
+  geom_point(color="#DAA520") +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(title="Average Imdb Score by Director",x="Directors",y="Average Imdb Score")
 
@@ -221,14 +221,15 @@ movie_by_director <- movie_by_director[67:4530,]
 movie_by_director <- movie_by_director[with(movie_by_director, order(-mean_score)), ]
 movie_by_director <- head(movie_by_director, 20)
 ggplot(aes(x = mean_score, y = director_name), data = movie_by_director) +
-  geom_point(aes(color = num_user_for_reviews), size = 2) + xlab("Average IMDB Score") + 
-  ylab("Director Name")+ theme_minimal() + ggtitle('Director, User Reviews & Scores')
+  geom_point(aes(color = num_user_for_reviews, fill="#f3ce13"), size = 2) + xlab("Average IMDB Score") + 
+  ylab("Director Name")+ theme_minimal() + ggtitle('Director, User Reviews & Scores') +
+  scale_color_gradient(low = "yellow", high = "gold4")
 
 
 ```
 ```{r user reviews, warning=FALSE, echo=FALSE, out.width="75%"}
 user <- filter(imdb,num_user_for_reviews <= 3000)
-ggplot(data = user, mapping = aes(x = imdb_score, y = num_user_for_reviews)) + geom_point() + facet_wrap( ~ country)+
+ggplot(data = user, mapping = aes(x = imdb_score, y = num_user_for_reviews)) + geom_point(color="#DAA520") + facet_wrap( ~ country)+
    xlab("IMDB Score") + 
   ylab("Number of User Reviews")+ theme_minimal() + ggtitle('Number of User Reviews by Country')
 ```
@@ -239,7 +240,7 @@ ggplot(data = user, mapping = aes(x = imdb_score, y = num_user_for_reviews)) + g
 ggplot(imdb, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
   geom_point() +
   labs(title = "Movie Duration and IMDB score", 
-       x = "Imdb Score", y = "Duration") 
+       x = "Imdb Score", y = "Duration")
 ```
 
 
@@ -308,7 +309,7 @@ rankImportance <- varImportance %>%
 # Use ggplot2 to visualize the relative importance of variables
 ggplot(rankImportance, aes(x = reorder(Variables, Importance), 
                            y = Importance, fill = Importance)) +
-  geom_bar(stat='identity', fill = "#f3ce13") + 
+  geom_bar(stat='identity', fill = "#DAA520") + 
   geom_text(aes(x = Variables, y = 0.5, label = Rank),
             hjust=0, vjust=0.55, size = 4, colour = 'black') +
   labs(x = 'Variables') +
