@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  html_document: default
   pdf_document: default
+  html_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -101,6 +101,8 @@ imdb$country <- factor(imdb$country)
 
 
 ## Data Exploration
+
+After cleaning up the data, we are now left with `r ncol(imdb)` variables and `r nrow(imdb)` rows. 
 
 After exploring the data variables, languages, aspect ratio, imdb movie link and color, we removed the 4 variables to reduce bias in the data. These variables had data heavily skewed on one side. Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is 9.3. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
 
@@ -315,7 +317,7 @@ ggplot(rankImportance, aes(x = reorder(Variables, Importance),
 ```
 
 
-```{r random forest, warning=FALSE,echo=FALSE,out.width="75%"}
+```{r random forest II, warning=FALSE,echo=FALSE,out.width="75%"}
 
 rmse(imdb_rf, imdb_test)
 imdb_select_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 500, importance = TRUE, do.trace = 50)
