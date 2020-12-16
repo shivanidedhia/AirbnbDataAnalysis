@@ -287,6 +287,8 @@ imdb_test <- imdb %>% slice(-imdb_train_indices)
 imdb_mod_1 = lm (imdb_score~ duration + num_voted_users + num_critic_for_reviews + movie_facebook_likes,data=imdb_train)
 summary(imdb_mod_1)
 
+rmse(imdb_mod_1, imdb_test)
+
 ```
 
 
@@ -323,9 +325,10 @@ ggplot(rankImportance, aes(x = reorder(Variables, Importance),
 
 ```{r random forest II, warning=FALSE,echo=FALSE,out.width="75%"}
 
-rmse(imdb_rf, imdb_test)
+
 imdb_select_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 500, importance = TRUE, do.trace = 50)
 
+rmse(imdb_rf, imdb_test)
 
 ```
 
