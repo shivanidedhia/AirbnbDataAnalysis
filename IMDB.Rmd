@@ -270,6 +270,9 @@ In order to get the most important variables, we are dividing the dataset into t
 The linear model below shows that the number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared of 0.28 is extremely low which suggests the relationship between these variables is not linear even though they have a strong impact on the imdb score. 
 
 
+This low R-squared value indicates that imdb score is not explaining much in the variation of the dependent variables such as duration, num_voted_users,  num_critic_for_reviews or movie_facebook_likes and regardless of the variable significance, this is letting us know that the identified independent variable, even though significant, is not accounting for much of the mean of the dependent variable. 
+
+
 
 ```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
 
