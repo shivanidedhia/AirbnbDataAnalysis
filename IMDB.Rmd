@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  html_document: default
   pdf_document: default
+  html_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -27,7 +27,6 @@ library(rpart.plot)
 library(randomForest)
 library(plotly)
 library(modelr)
-library(caret)
 ```
 
 ## STA 9750 Final Project
@@ -40,9 +39,9 @@ IMDB <- read.csv("IMDM_ratings.csv")
 ```
 ## Introduction
 
-Many factors make a movie successful and profitable. Some of the factors include user reviews, budget of the movie, actor's and director's popularity. We will find out which factor has the most impact on a movie's success and profitability.  
+Many factors make a movie successful. Some of the factors include user reviews, budget of the movie, actor's and director's popularity. We will find out which factor has the most impact on a movie's success and profitability.  
 
-We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/IMDB-data), which has `r ncol(IMDB)` variables, `r dim(IMDB)[1]` movies across 100 years in `r n_distinct(IMDB$country)` countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/IMDB-data), which has `r ncol(IMDB)` variables, `r dim(IMDB)[1]` movies across 100 years from `r n_distinct(IMDB$country)` countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
 We will be using some of the modeling techniques with associated visualizations to identify the most important variables that impact the success and ratings of the movie along with their profitability. 
 
@@ -102,7 +101,7 @@ IMDB$country <- factor(IMDB$country)
 
 ## Data Exploration
 
-After cleaning the data, we are now left with `r ncol(IMDB)` variables and `r nrow(IMDB)` rows. Some features like aspect ratio, imdb movie link and color as they reduced the quality of the data.
+After cleaning the data, we narrowed our scope of model to `r ncol(IMDB)` variables and `r nrow(IMDB)` rows. We choose to remove some features such as aspect ratio, imdb movie link and color as they reduce the quality of our analysis.
 
 Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9 as per the distribution shown below. The highest rating received by one movie is `r max(IMDB$imdb_score)`.
 
@@ -362,5 +361,4 @@ The importance of next three variables, budget, genres and number of user review
 Random Forest took into consideration all the variables from the dataset to understand their impact on the IMDB score. Number of voted users is the most important variable for a high IMDB score. Followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were among the least impactful factors as one would think directors and actors bring in publicity leading to a higher viewership. 
 
 
-hi 
 
