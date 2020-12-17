@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  html_document: default
   pdf_document: default
+  html_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -319,7 +319,7 @@ ggplot(rankImportance, aes(x = reorder(Variables, Importance),
   coord_flip() + labs(title = "Variables by importance", 
        x = "Importance", y = "Variables") + theme_bw() 
 ```
-The root mean squared error for the above random forest is `r sqrt((sum((IMDB_test$imdb_score - predicted.rf)^2))/ nrow(IMDB_test))` making it an average model. 
+
 
 ```{r random forest I, warning=FALSE,echo=FALSE,out.width="75%"}
 
@@ -327,6 +327,7 @@ The root mean squared error for the above random forest is `r sqrt((sum((IMDB_te
 predicted.rf = predict(IMDB_rf,IMDB_test)
 
 ```
+The root mean squared error for the above random forest is `r sqrt((sum((IMDB_test$imdb_score - predicted.rf)^2))/ nrow(IMDB_test))` making it an average model. 
 
 
 # Random Forest with select variables to reduce the mean squared error
