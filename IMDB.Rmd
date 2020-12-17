@@ -362,5 +362,5 @@ The importance of next three variables, budget, genres and number of user review
 Random Forest took into consideration all the variables from the dataset to understand their impact on the IMDB score. Number of voted users is the most important variable for a high IMDB score. Followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were among the least impactful factors as one would think directors and actors bring in publicity leading to a higher viewership. 
 
 
-
+hi 
 
