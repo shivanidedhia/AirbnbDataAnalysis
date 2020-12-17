@@ -27,6 +27,7 @@ library(rpart.plot)
 library(randomForest)
 library(plotly)
 library(modelr)
+library(caret)
 ```
 
 ## STA 9750 Final Project
@@ -323,12 +324,44 @@ ggplot(rankImportance, aes(x = reorder(Variables, Importance),
 ```
 
 
-```{r random forest II, warning=FALSE,echo=FALSE,out.width="75%"}
+```{r random forest I, warning=FALSE,echo=FALSE,out.width="75%"}
+
+# Predicting using the new model
+predicted.rf = predict(imdb_rf,imdb_test)
+
+# Calculating the root mean squared error
+sqrt((sum((imdb_test$imdb_score - predicted.rf)^2))/ nrow(imdb_test))
+
+#MSE
+mean((predicted.rf - imdb_test$imdb_score)^2)
+
+```
 
 
-imdb_select_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 500, importance = TRUE, do.trace = 50)
+# Random Forest with select variables to reduce the mean squared error
 
-rmse(imdb_rf, imdb_test)
+The mean squared error of the model below is `mean((predict.imdb.rf - imdb_test$imdb_score)^2)` which is lower than the previous model `mean((predicted.rf - imdb_test$imdb_score)^2)`. 
+
+
+```{r random forest III, warning=FALSE,echo=FALSE,out.width="75%"}
+
+imdb.rf <- randomForest(imdb_score~num_critic_for_reviews + duration + director_facebook_likes + actor_3_facebook_likes + actor_1_facebook_likes + gross + num_voted_users + cast_total_facebook_likes  + num_user_for_reviews + budget + title_year + actor_2_facebook_likes + movie_facebook_likes, data = imdb_train, mtry = 5)
+
+#predict on test set
+predict.imdb.rf <- predict(imdb.rf, imdb_test)
+
+#RMSE
+sqrt((sum((imdb_test$imdb_score - predict.imdb.rf)^2))/ nrow(imdb_test))
+
+#MSE
+mean((predict.imdb.rf - imdb_test$imdb_score)^2)
+
+varImpPlot(imdb.rf)
+
+```
+```{r confusionMatrix, warning=FALSE,echo=FALSE,out.width="75%"}
+
+caret::confusionMatrix(predict.imdb.rf, imdb_test$imdb_score)
 
 ```
 
