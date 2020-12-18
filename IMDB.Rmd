@@ -2,8 +2,8 @@
 title: "Predicting IMBD Scores"
 author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
 output: 
-  pdf_document: default
   html_document: default
+  pdf_document: default
   fig_width: .5
   fig_height: .5
   fig.align: center
@@ -11,7 +11,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE , dev = "png", dpi=300)
-options(digits = 2)
+
+
 
 library(readr)
 library(dplyr)
@@ -31,19 +32,16 @@ library(modelr)
 
 ## STA 9750 Final Project
 
-
-## Hypothesis
-
 ```{r introduction, warning=FALSE, echo=FALSE}
 IMDB <- read.csv("IMDM_ratings.csv")
 ```
 ## Introduction
 
-Many factors make a movie successful. Some of the factors include user reviews, budget of the movie, actor's and director's popularity. We will find out which factor has the most impact on a movie's success and profitability.  
+Many factors such as user reviews, budget of the movie, actor's and director's popularity etc play role in making a movie successful.IMDB is the world's most popular and authoritative source designed to help people what to watch.Thus IMDB plays an important role in measuring success of a movie by rating it considering various factors.This project focuses on finding out find which factor impacts the IMDB rating of a movie the most.
 
-We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/IMDB-data), which has `r ncol(IMDB)` variables, `r dim(IMDB)[1]` movies across 100 years from `r n_distinct(IMDB$country)` countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We fetched our data from  IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/IMDB-data), which consists of `r dim(IMDB)[1]` movies across 100 years from `r n_distinct(IMDB$country)` countries. The data holds `r ncol(IMDB)` variables such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
-We will be using some of the modeling techniques with associated visualizations to identify the most important variables that impact the success and ratings of the movie along with their profitability. 
+We will be using some of the modeling techniques with associated visualizations to identify the most important variable that impacts the success and rating of a movie.
 
 ```{r combine and clean data, warning=FALSE, echo=FALSE}
 IMDB <- IMDB[!duplicated(IMDB), ]
@@ -101,15 +99,13 @@ IMDB$country <- factor(IMDB$country)
 
 ## Data Exploration
 
-After cleaning the data, we narrowed our scope of model to `r ncol(IMDB)` variables and `r nrow(IMDB)` rows. We choose to remove some features such as aspect ratio, imdb movie link and color as they reduce the quality of our analysis.
+After cleaning the data, we narrowed our scope of model to `r ncol(IMDB)` variables and `r nrow(IMDB)` rows. We chose to remove some features such as aspect ratio, IMDB movie link and color as they reduced the quality of our data and were less important to our analysis.We also calculated net profit and ROI of all the movies and added them to the factors that may impact the rating of a movie.Further to simplify our data we bifurcated the countries in three categories putting other countries except USA and UK into 'others'.We also replaced all content_rating with modern rating system.
 
-Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9 as per the distribution shown below. The highest rating received by one movie is `r max(IMDB$imdb_score)`.
+IMDB offers a grading scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each movie. 
 
-IMDB offers a scoring scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each movie. 
+Movies with IMDB ratings above 7.5 are considered to be highly recommended.As per the distribution shown below majority of the movies are rated 7.6 with only a handful of them  rated above 9. The highest rating received by a movie is `r max(IMDB$imdb_score)`.
 
-Majority of the movies are between the range of 6.5 to 7.7 which is considered as an average IMDB score. The histogram closely fits a normal distribution. 
-
-However, there are only a handful of phenomenal movies which are rated above 8.
+Majority of the movies are between the range of 6.5 to 7.7 which is considered as an average IMDB score. The histogram closely fits a normal distribution.However, there are only a handful of phenomenal movies which are rated above 8.
 
 
 ```{r score_distribution, warning=FALSE, echo=FALSE, out.width="75%"}
@@ -124,7 +120,7 @@ ggplot(aes(x=imdb_score), data = IMDB) +
 ```
 
 
-The table below is sorted by imdb score greater than 7.5 and arranged in descending order. IMDB score of 7.6 has the majority of the movies. As the IMDB score increases above 8.8, the movies drop to less than 5. Only .21% of the movies are rated above 8.8 which is represented in the histogram above as well. 
+The table below is sorted by IMDB score greater than 7.5 and arranged in descending order. IMDB score of 7.6 has the majority of the movies. As the IMDB score increases above 8.8, the movies drop to less than 5. Only .21% of the movies are rated above 8.8 which is represented in the histogram above as well. 
 
 ```{r imdb_score_table, warning=FALSE, echo=FALSE,out.width="75%"}
 
