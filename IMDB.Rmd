@@ -11,7 +11,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE , dev = "png", dpi=300)
-options(digits = 2)
+
+
 
 library(readr)
 library(dplyr)
@@ -27,74 +28,70 @@ library(rpart.plot)
 library(randomForest)
 library(plotly)
 library(modelr)
-library(caret)
 ```
 
 ## STA 9750 Final Project
-
-
-## Hypothesis
 
 ```{r introduction, warning=FALSE, echo=FALSE}
 IMDB <- read.csv("IMDM_ratings.csv")
 ```
 ## Introduction
 
-Many factors make a movie successful and profitable. Some of the factors include budget of the movie, actor's and director's popularity, etc. We will find out which factor has the most impact on a movie's success and profitability.  
+Many factors such as user reviews, budget of the movie, actor's and director's popularity etc play role in making a movie successful.IMDB is the world's most popular and authoritative source designed to help people what to watch.Thus IMDB plays an important role in measuring success of a movie by rating it considering various factors.This project focuses on finding out find which factor impacts the IMDB rating of a movie the most.
 
-We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-data), which has `r ncol(IMDB)` variables, `r dim(IMDB)[1]` movies across 100 years in `r n_distinct(IMDB$country)` countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
+We fetched our data from  IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/IMDB-data), which consists of `r dim(IMDB)[1]` movies across 100 years from `r n_distinct(IMDB$country)` countries. The data holds `r ncol(IMDB)` variables such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
-We will be using some of the modeling techniques with associated visualizations to identify the most important variables that impact the success and ratings of the movie along with the profitability. 
+We will be using some of the modeling techniques with associated visualizations to identify the most important variable that impacts the success and rating of a movie.
 
 ```{r combine and clean data, warning=FALSE, echo=FALSE}
-imdb <- IMDB[!duplicated(IMDB), ]
-imdb <- imdb[!is.na(imdb$gross), ]
-imdb <- imdb[!is.na(imdb$budget), ]
+IMDB <- IMDB[!duplicated(IMDB), ]
+IMDB <- IMDB[!is.na(IMDB$gross), ]
+IMDB <- IMDB[!is.na(IMDB$budget), ]
 
-imdb <- subset(imdb, select = -c(aspect_ratio))
-imdb <- subset(imdb, select = -c(color))
-imdb <- subset(imdb, select = -c(movie_imdb_link))
-imdb <- subset(imdb, select = -c(language))
+IMDB <- subset(IMDB, select = -c(aspect_ratio))
+IMDB <- subset(IMDB, select = -c(color))
+IMDB <- subset(IMDB, select = -c(movie_imdb_link))
+IMDB <- subset(IMDB, select = -c(language))
 
 # Cleaning the movie title by removing the special character "Â" at the end and some whitespaces.
-imdb$movie_title <- gsub("Â", "", as.character(factor(imdb$movie_title)))
-clean_title <- str_trim(imdb$movie_title, side = "right")
+IMDB$movie_title <- gsub("Â", "", as.character(factor(IMDB$movie_title)))
+clean_title <- str_trim(IMDB$movie_title, side = "right")
 
 # Adding profit and ROI
-imdb <- imdb %>% mutate(net_profit = gross - budget,return_on_investment = (net_profit/budget)*100)
+IMDB <- IMDB %>% mutate(net_profit = gross - budget,return_on_investment = (net_profit/budget)*100)
 
 # replacing all NA's with col average
-imdb$facenumber_in_poster[is.na(imdb$facenumber_in_poster)] <- round(mean(imdb$facenumber_in_poster, na.rm = TRUE))
+IMDB$facenumber_in_poster[is.na(IMDB$facenumber_in_poster)] <- round(mean(IMDB$facenumber_in_poster, na.rm = TRUE))
 
 # replacing all 0's with NA's
-imdb[,c(5,6,8,13,24,26)][imdb[,c(5,6,8,13,24,26)] == 0] <- NA
+IMDB[,c(5,6,8,13,24,26)][IMDB[,c(5,6,8,13,24,26)] == 0] <- NA
 
 # replacing all NA's with col average
-imdb$num_critic_for_reviews[is.na(imdb$num_critic_for_reviews)] <- round(mean(imdb$num_critic_for_reviews, na.rm = TRUE))
-imdb$duration[is.na(imdb$duration)] <- round(mean(imdb$duration, na.rm = TRUE))
-imdb$director_facebook_likes[is.na(imdb$director_facebook_likes)] <- round(mean(imdb$director_facebook_likes, na.rm = TRUE))
-imdb$actor_3_facebook_likes[is.na(imdb$actor_3_facebook_likes)] <- round(mean(imdb$actor_3_facebook_likes, na.rm = TRUE))
-imdb$actor_1_facebook_likes[is.na(imdb$actor_1_facebook_likes)] <- round(mean(imdb$actor_1_facebook_likes, na.rm = TRUE))
-imdb$cast_total_facebook_likes[is.na(imdb$cast_total_facebook_likes)] <- round(mean(imdb$cast_total_facebook_likes, na.rm = TRUE))
-imdb$actor_2_facebook_likes[is.na(imdb$actor_2_facebook_likes)] <- round(mean(imdb$actor_2_facebook_likes, na.rm = TRUE))
-imdb$movie_facebook_likes[is.na(imdb$movie_facebook_likes)] <- round(mean(imdb$movie_facebook_likes, na.rm = TRUE))
+IMDB$num_critic_for_reviews[is.na(IMDB$num_critic_for_reviews)] <- round(mean(IMDB$num_critic_for_reviews, na.rm = TRUE))
+IMDB$duration[is.na(IMDB$duration)] <- round(mean(IMDB$duration, na.rm = TRUE))
+IMDB$director_facebook_likes[is.na(IMDB$director_facebook_likes)] <- round(mean(IMDB$director_facebook_likes, na.rm = TRUE))
+IMDB$actor_3_facebook_likes[is.na(IMDB$actor_3_facebook_likes)] <- round(mean(IMDB$actor_3_facebook_likes, na.rm = TRUE))
+IMDB$actor_1_facebook_likes[is.na(IMDB$actor_1_facebook_likes)] <- round(mean(IMDB$actor_1_facebook_likes, na.rm = TRUE))
+IMDB$cast_total_facebook_likes[is.na(IMDB$cast_total_facebook_likes)] <- round(mean(IMDB$cast_total_facebook_likes, na.rm = TRUE))
+IMDB$actor_2_facebook_likes[is.na(IMDB$actor_2_facebook_likes)] <- round(mean(IMDB$actor_2_facebook_likes, na.rm = TRUE))
+IMDB$movie_facebook_likes[is.na(IMDB$movie_facebook_likes)] <- round(mean(IMDB$movie_facebook_likes, na.rm = TRUE))
 
 # delete the blank cols in content rating as they cannot be replaced with anything reasonable
-imdb <- imdb[!(imdb$content_rating %in% ""),]
+IMDB <- IMDB[!(IMDB$content_rating %in% ""),]
 
 # replacing all content_rating with mordern rating system
-imdb$content_rating[imdb$content_rating == 'M']   <- 'PG' 
-imdb$content_rating[imdb$content_rating == 'GP']  <- 'PG' 
-imdb$content_rating[imdb$content_rating == 'X']   <- 'NC-17'
-imdb$content_rating[imdb$content_rating == 'Approved']  <- 'R' 
-imdb$content_rating[imdb$content_rating == 'Not Rated'] <- 'R' 
-imdb$content_rating[imdb$content_rating == 'Passed']    <- 'R' 
-imdb$content_rating[imdb$content_rating == 'Unrated']   <- 'R' 
-imdb$content_rating <- factor(imdb$content_rating)
+IMDB$content_rating[IMDB$content_rating == 'M']   <- 'PG' 
+IMDB$content_rating[IMDB$content_rating == 'GP']  <- 'PG' 
+IMDB$content_rating[IMDB$content_rating == 'X']   <- 'NC-17'
+IMDB$content_rating[IMDB$content_rating == 'Approved']  <- 'R' 
+IMDB$content_rating[IMDB$content_rating == 'Not Rated'] <- 'R' 
+IMDB$content_rating[IMDB$content_rating == 'Passed']    <- 'R' 
+IMDB$content_rating[IMDB$content_rating == 'Unrated']   <- 'R' 
+IMDB$content_rating <- factor(IMDB$content_rating)
 
-levels(imdb$country) <- c(levels(imdb$country), "Others")
-imdb$country[(imdb$country != 'USA')&(imdb$country != 'UK')] <- 'Others' 
-imdb$country <- factor(imdb$country)
+levels(IMDB$country) <- c(levels(IMDB$country), "Others")
+IMDB$country[(IMDB$country != 'USA')&(IMDB$country != 'UK')] <- 'Others' 
+IMDB$country <- factor(IMDB$country)
 
 
 ```
@@ -102,21 +99,19 @@ imdb$country <- factor(imdb$country)
 
 ## Data Exploration
 
-After cleaning up the data, we are now left with `r ncol(imdb)` variables and `r nrow(imdb)` rows. 
+After cleaning the data, we narrowed our scope of model to `r ncol(IMDB)` variables and `r nrow(IMDB)` rows. We chose to remove some features such as aspect ratio, IMDB movie link and color as they reduced the quality of our data and were less important to our analysis.We also calculated net profit and ROI of all the movies and added them to the factors that may impact the rating of a movie.Further to simplify our data we bifurcated the countries in three categories putting other countries except USA and UK into 'others'.We also replaced all content_rating with modern rating system.
 
-After exploring the data variables, languages, aspect ratio, imdb movie link and color, we removed the 4 variables to reduce bias in the data. These variables had data heavily skewed on one side. Movies rated above 7.5 are considered to be highly recommended. Majority of the movies are rated 7.6 with only a handful rated above 9. The highest rating received by one movie is `r max(imdb$imdb_score)`. This shows there is not enough data to understand the variables that have the strongest impact on highly rated movies.
+IMDB offers a grading scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each movie. 
 
-IMDB offers a scoring scale that allows users to rate films on a scale of one to ten. It indicates that submitted scores are filtered and weighted in various ways in order to produce a weighted mean that is displayed for each film, series, and so on. So, this means according to this, 
-the higher the score is, the better the movie will be. 
-So, here most of the movies are between the range of 6.5 to 7.7. We can consider this as good/very good movies. It indicates, the acceptance of these movies are well enough among the movie audiences. 
-However, there are obviously some exceptionally phenomenal movies which are rated beyond 8 but we can see that numbers are may be couple of hundreds only. On the other side, the bar chart is very 
-skewed which indicates there are also a good number of movies which were upto the expectation of the viewers. However, in general, this is still difficult to predict the important factors behind
-these scores.
+Movies with IMDB ratings above 7.5 are considered to be highly recommended.As per the distribution shown below majority of the movies are rated 7.6 with only a handful of them  rated above 9. The highest rating received by a movie is `r max(IMDB$imdb_score)`.
+
+Majority of the movies are between the range of 6.5 to 7.7 which is considered as an average IMDB score. The histogram closely fits a normal distribution.However, there are only a handful of phenomenal movies which are rated above 8.
 
 
 ```{r score_distribution, warning=FALSE, echo=FALSE, out.width="75%"}
 
-ggplot(aes(x=imdb_score), data = imdb) +
+ggplot(aes(x=imdb_score), data = IMDB) +
+  theme_bw() +
   geom_histogram(binwidth = 0.2,aes(fill = ..count..),colour="white",fill="#DAA520") +
   scale_x_continuous(breaks = 0:10) +
   ggtitle("IMDB Score Distribution") +
@@ -125,52 +120,51 @@ ggplot(aes(x=imdb_score), data = imdb) +
 ```
 
 
-
+The table below is filtered by IMDB score greater than 7.5 and arranged in descending order. The majority of the movies has the IMDB score of 7.6 .As the IMDB score increases above 8.8, the number of movies drop to less than 5. Only 0.21% of the movies are rated above 8.8 which we can also see in the histogram shown above. 
 
 ```{r imdb_score_table, warning=FALSE, echo=FALSE,out.width="75%"}
 
-imdb %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score) %>% arrange(desc(n))
+IMDB %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score) %>% arrange(desc(n))
 
 ```
 
-## Impact of content rating on imdb score
+## Impact of content rating on IMDB score
 
-Average score for movies by content rating is below 6.6 which is considered a poor imdb score. As per this distribution, content rating does not have a strong impact on the imdb score.
-
-Content rating basically tells us about the age group of people who should watch these movies. Content rating does not have strong influence on the imdb score. However, we can see that most of the content ratings are in the range of
-6.5 to 7.5. But, there are some outlier categories which are beyond this range. So, it means there is a possibility that these ratings are coming from different age groups but we cannot confirm this certainly with this data. R and PG-13 have the most number of movies which indicates most of the movies are not for under age people. What makes it more interesting is the imdb score of these movies are also very poor and below average. To summarize, a big chunk of the movies are the restricted ones with poor imdb score.
+The average IMDB score is `r mean(IMDB$imdb_score)`which is considered as a poor score. The content rating with 'R' category has the highest count of `r length(IMDB$content_rating[IMDB$content_rating=='R'])` movies which may be the reason that 'R' has the highest IMDB rating compared to others. However, PG-13 has the second highest count of `r length(IMDB$content_rating[IMDB$content_rating=='PG-13'])` movies with an average IMDB score of less than 6.3. As per this distribution we conclude that content rating does not show a strong impact on the IMDB score of a movie.
 
 ```{r content_rating chart, warning=FALSE, echo=FALSE,out.width="75%"}
 
-rating_imdb <- imdb %>% group_by(content_rating) %>%
+rating_IMDB <- IMDB %>% group_by(content_rating) %>%
   filter(!is.na(content_rating)) %>%
   summarise(average_imdb_score = mean(imdb_score), num = n())
 
-  ggplot(aes(x=average_imdb_score, y = num, label = content_rating),data = rating_imdb) +
+  ggplot(aes(x=average_imdb_score, y = num, label = content_rating),data = rating_IMDB) +
   geom_point(color="#DAA520") +
   geom_label_repel() +
+  theme_bw() +
   ggtitle("Average IMDB Score by Rating") +
   labs(x = "Average IMDB Score", y = "Count of Movies")
 
 ```
 
 
-## Understanding the distribution of directors and their effect on IMDB score
+## Understanding the distribution of directors and their effect on the IMDB score
 
-Directors have been grouped by the number of movies directed. The data has been filtered to only show movies directed above 10 and below 50 to remove any anomalies in the data. Directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher imdb score. 
+We grouped the directors here by the number of movies they directed.Further, we filtered the data to show only directors with movies directed above 10 and below 50 to remove any anomalies in the data.Logically directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher IMDB score. 
 
-According to the below distribution, even after filtering, the number of movies for most of the directors are between 10 to 15, few are in the range of 15 to 20 and rest two are absolutely outliers. This indicates that in this time frame, the most naturalistic production of movies by the directors are between 10 to 15 range. The rational can be budget, resources or time constraints etc.
+According to the distribution shown below, even after filtering, the number of movies for most of the directors are between 10 to 15, few are in the range of 15 to 20 and rest two are outliers. This indicates that in this time frame the most naturalistic production of movies by the directors is between 10 to 15 range. The rational can be budget, resources or time constraints.
 
 
 ```{r directors, warning=FALSE,echo=FALSE,out.width="75%"}
 
-imdb.directors <- data.frame (imdb %>% 
+IMDB.directors <- data.frame (IMDB %>% 
                                   group_by(director_name) %>%
                                   summarise(count = n())%>%
                                   filter(count >10, count <50))
 
-ggplot(aes(x = director_name, y = count), data = imdb.directors)+
+ggplot(aes(x = director_name, y = count), data = IMDB.directors)+
   geom_jitter(color="#DAA520") +
+  theme_bw() +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(title="Directors Distribution on Movies",x="Directors",y="Count of Movies")
 
@@ -178,13 +172,12 @@ ggplot(aes(x = director_name, y = count), data = imdb.directors)+
 ```
 
 
-Only a handful of directors have over 15 movies directed in this data set. Steven Spielberg is the only director to have ~ 24 movies directed. The chart below shows the average imdb score for directors with 15 or more directed movies. The imdb score is above 5.5 for directors with more than 15 movies. Most directors have received a higher imdb score that shows the number of movies directed has a slight impact on the imdb score.
+The chart below shows the average IMDB score for directors with 15 or more directed movies.Only few directors have directed movies above 15 in this data set.The IMDB score is above 5.5 for directors with more than 15 movies. Steven Spielberg is the only director to direct ~ 24 movies. Most of the directors here have received a higher IMDB score which shows that the number of movies directed has a slight impact on the IMDB score.
 
-In the below chart, we are observing the average imdb score for the directors who has movies between 15 to 49. We see most of the averages lies between 6.75 to 7.75. This tells us the average of the score has similar trend for this group of directors. However, there is an outlier as well.
 
 ```{r score by director, warning=FALSE, echo=FALSE,out.width="75%"}
 
-avg_score_per_director <- data.frame (imdb %>% 
+avg_score_per_director <- data.frame (IMDB %>% 
                                   group_by(director_name) %>%
                                   mutate(count = n(),average_imdb_score = mean(imdb_score))%>%
                                   filter(count >14, count <50))
@@ -193,116 +186,116 @@ avg_score_per_director <- data.frame (imdb %>%
 
 ggplot(aes(x = director_name, y = average_imdb_score), data = avg_score_per_director)+
   geom_point(color="#DAA520") +
+  
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
-  labs(title="Average Imdb Score by Director",x="Directors",y="Average Imdb Score")
+  labs(title="Average IMDB Score by Director",x="Directors",y="Average IMDB Score")
 
 ```
 
 
+## Top 20 movies by IMDB score 
 
-## Impact of movie duration for a higher imdb score
+The scatter plot below shows the top 20 movies that have received the highest IMDB scores. Most of the directors have more than one movie rated above 7.5 which is considered to be a good score. These movies have received higher user reviews compared to other movies in the data set. The minimum user reviews are 1000 for these top 20 movies which is significantly higher than the median of 205 user reviews. 
 
-The average imdb score is shown compared to the duration of the movie. The duration of the movie increases as the imdb score increases. Duration of the movie seems like it is one of the impactful factors that affect the imdb score. The number of movies rated above 7 increases as the movie duration increases.
+`r summary(IMDB$num_user_for_reviews)`
 
+```{r movie_by_director, warning=FALSE, echo=FALSE, out.width="75%"}
 
-
-## Top 20 movies grouped by genres with the highest imdb score. 
-
-
-
-```{r movieduration, warning=FALSE, echo=FALSE, out.width="75%"}
-
-director_group <- group_by(imdb, director_name, num_user_for_reviews)
+director_group <- group_by(IMDB, director_name, num_user_for_reviews)
 movie_by_director <- summarise(director_group,
                                mean_score = mean(imdb_score))
 
-
-movie_by_director <- movie_by_director[67:4530,]
 movie_by_director <- movie_by_director[with(movie_by_director, order(-mean_score)), ]
 movie_by_director <- head(movie_by_director, 20)
 ggplot(aes(x = mean_score, y = director_name), data = movie_by_director) +
-  geom_point(aes(color = num_user_for_reviews, fill="#f3ce13"), size = 2) + xlab("Average IMDB Score") + 
-  ylab("Director Name")+ theme_minimal() + ggtitle('Director, User Reviews & Scores') +
-  scale_color_gradient(low = "yellow", high = "gold4")
+  geom_point(aes(color = num_user_for_reviews), size = 2) + xlab("Average IMDB Score") + 
+  ylab("Director Name")+ theme_minimal() + ggtitle('Director, User Reviews & IMDB Score') +
+  scale_color_gradient(low = "yellow", high = "gold4") 
 
 
 ```
+
+
+## Impact of country on the IMDB score
+
+We grouped all the other countries except U.S and U.K in 'other' category while cleaning the data as these countries were significantly lower in number compared to U.S and U.K. As per the scatter plot below, highest number of movies reviewed are from U.S followed by U.K.We can also see a higher IMDB rating in U.S with the highest number of user reviews. We observe the pattern of higher scores and higher user reviews on repeat in the blow plot as well. 
+
+
 ```{r user reviews, warning=FALSE, echo=FALSE, out.width="75%"}
-user <- filter(imdb,num_user_for_reviews <= 3000)
+user <- filter(IMDB,num_user_for_reviews <= 3000)
 ggplot(data = user, mapping = aes(x = imdb_score, y = num_user_for_reviews)) + geom_point(color="#DAA520") + facet_wrap( ~ country)+
    xlab("IMDB Score") + 
-  ylab("Number of User Reviews")+ theme_minimal() + ggtitle('Number of User Reviews by Country')
+  ylab("Number of User Reviews")+ theme_minimal() + ggtitle('Number of User Reviews by Country') + theme_bw() 
 ```
+## Movie durations impact on the IMDB score
 
+The scatter plot below shows a linear relationship between IMDB score and duration. As the duration increases the IMDB score also increases. Most movies with a score higher than 7.5 have longer duration. 
 
 ```{r movie duration, warning=FALSE, echo=FALSE,out.width="75%"}
 
-ggplot(imdb, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
+ggplot(IMDB, aes(x =imdb_score, y =duration,colour = factor(imdb_score)))+
   geom_point() +
   labs(title = "Movie Duration and IMDB score", 
-       x = "Imdb Score", y = "Duration")
+       x = "IMDB Score", y = "Duration") + theme_bw() 
 ```
 
 
 ## Impact of net profit on IMDB score.
 
-Movies with a net profit over 200 million have a higher IMDB rating. Net profit is one of the strong indicators of a higher IMDB score. As the trend below shows higher net profits translates to a higher rating. It could be assumed that the viewership for movies with higher net profits was higher and thus, received a higher movie rating. 
+Movies with net profit above 200 million have higher IMDB rating. The trend below shows that higher net profits translates into higher rating. Therefore we can assume that the viewership for movies with higher net profits is higher and thus receives a higher movie rating. 
 
-Technically, the movies with higher IMDB score should generate higher net profit. But this is not always true. There are many movies that have very good IMDB score but did not generate much profit. So, IMDB score cannot be a sole factor to consider the net profit. Sometimes, this score can be litte confusing as well.
-
+The movies with higher IMDB score should generate higher net profit. But this is not always the case. There are many movies that have very good IMDB score but did not generate much profit. So, IMDB score cannot be a sole factor to consider the net profit.
 
 
 ```{r net profit, warning=FALSE,echo=FALSE,out.width="75%"}
 
-ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(imdb, net_profit > 1, !is.na(net_profit))) +
+ggplot(aes(x = imdb_score, y=net_profit/1000000 ), data = subset(IMDB, net_profit > 1, !is.na(net_profit))) +
   geom_jitter(shape = 21, fill = '#f3ce13') +
   geom_smooth() +
   labs(title = "Net Profit and IMDB score", 
-       x = " Imdb Score", y = "Net Profit in $ Million") 
+       x = " IMDB Score", y = "Net Profit in $ Million") +theme_bw() 
 
 ```
 
 
-## Training the model
+## Modeling techniques to identify the most important variables that impact IMDB ratings of the movie
 
-In order to get the most important variables, we are dividing the dataset into two. 80% of the data is divided as training dataset while the rest 20% is used for testing. 
+We divide the data set into two parts with 80% of the data as the training data and the rest 20% as the testing data. 
 
-The linear model below shows that the number of voted users, number of critic reviews and duration has the most impact on the imdb score. The R-squared of 0.28 is extremely low which suggests the relationship between these variables is not linear even though they have a strong impact on the imdb score. 
+# Linear Model
 
+The linear model shown below depicts that the number of voted users,the number of critic reviews and the duration impacts IMDB score the most. The R-squared of 0.28 is extremely low which suggests that the relationship between these variables is not linear.
 
-This low R-squared value indicates that imdb score is not explaining much in the variation of the dependent variables such as duration, num_voted_users,  num_critic_for_reviews or movie_facebook_likes and regardless of the variable significance, this is letting us know that the identified independent variable, even though significant, is not accounting for much of the mean of the dependent variable. 
-
+The low R-squared value indicates that IMDB score does not explain much about the variation in the dependent variables such as duration, num_voted_users,  num_critic_for_reviews and movie_facebook_likes. Regardless of the variable significance,we can infer that the identified independent variable, even though significant, does not account for much of the mean of the dependent variable. 
 
 
 ```{r lm, warning=FALSE,echo=FALSE,out.width="75%"}
 
-imdb_train_indices <- sample(1:nrow(imdb),0.8*nrow(imdb))
+IMDB_train_indices <- sample(1:nrow(IMDB),0.8*nrow(IMDB))
 
-imdb_train <- imdb %>% slice(imdb_train_indices)
+IMDB_train <- IMDB %>% slice(IMDB_train_indices)
 
-imdb_test <- imdb %>% slice(-imdb_train_indices)
+IMDB_test <- IMDB %>% slice(-IMDB_train_indices)
 
-# How is imdb score related to the num of voted users compared to duration
+# How is IMDB score related to the number of voted users compared to duration
 
-imdb_mod_1 = lm (imdb_score~ duration + num_voted_users + num_critic_for_reviews + movie_facebook_likes,data=imdb_train)
-summary(imdb_mod_1)
+IMDB_mod_1 = lm (imdb_score~ duration + num_voted_users + num_critic_for_reviews + movie_facebook_likes,data=IMDB_train)
+summary(IMDB_mod_1)
 
-rmse(imdb_mod_1, imdb_test)
+rmse(IMDB_mod_1, IMDB_test)
 
 ```
 
 
-## Random Forest to determine the variable that has the most impact on the imdb score
+## Random Forest to determine the variable that has the most impact on the IMDB score
 
-We will be creating a random forest to identify the most important variables. For this project, we are building a random forest with 500 trees using all the variables. The model will be conducted on the training dataset. 
-
-
+Now let's run a Random Forest Model with our variables to identify the most important variable on the training data. Random forest will include all the variables from the data set. Variables by importance are plotted below which depicts that the number of voted user impacts IMDB score the most.
 
 
 ```{r random forest, warning=FALSE,echo=FALSE,out.width="75%"}
-imdb_rf <-  randomForest(imdb_score ~ ., data=imdb_train,ntree = 500, importance = TRUE, do.trace = 50)
+IMDB_rf <-  randomForest(imdb_score ~ ., data=IMDB_train,ntree = 500, importance = TRUE, do.trace = 50)
 
-importance <- importance(imdb_rf)
+importance <- importance(IMDB_rf)
 
 varImportance <- data.frame(Variables = row.names(importance), 
                             Importance = round(importance[ ,'IncNodePurity'],2))
@@ -319,62 +312,50 @@ ggplot(rankImportance, aes(x = reorder(Variables, Importance),
             hjust=0, vjust=0.55, size = 4, colour = 'black') +
   labs(x = 'Variables') +
   coord_flip() + labs(title = "Variables by importance", 
-       x = "Importance", y = "Variables") 
+       x = "Importance", y = "Variables") + theme_bw() 
 ```
 
 
 ```{r random forest I, warning=FALSE,echo=FALSE,out.width="75%"}
 
 # Predicting using the new model
-predicted.rf = predict(imdb_rf,imdb_test)
-
-# Calculating the root mean squared error
-sqrt((sum((imdb_test$imdb_score - predicted.rf)^2))/ nrow(imdb_test))
-
-#MSE
-mean((predicted.rf - imdb_test$imdb_score)^2)
+predicted.rf = predict(IMDB_rf,IMDB_test)
 
 ```
+The root mean squared error for the above random forest is `r sqrt((sum((IMDB_test$imdb_score - predicted.rf)^2))/ nrow(IMDB_test))` making it an average model. 
 
 
-# Random Forest with select variables to reduce the mean squared error
+# Random Forest with select variables to reduce the Mean Squared Error
 
-The mean squared error of the model below is `mean((predict.imdb.rf - imdb_test$imdb_score)^2)` which is lower than the previous model `mean((predicted.rf - imdb_test$imdb_score)^2)`. 
+The mean squared error of the model below is `mean((predict.IMDB.rf - IMDB_test$imdb_score)^2)` which is lower than the previous model `mean((predicted.rf - IMDB_test$imdb_score)^2)`.As this model uses only some important variables placed on top it could result into a lower root mean squared error. 
 
 
-```{r random forest III, warning=FALSE,echo=FALSE,out.width="75%"}
+```{r random forest II, warning=FALSE,echo=FALSE,out.width="75%"}
 
-imdb.rf <- randomForest(imdb_score~num_critic_for_reviews + duration + director_facebook_likes + actor_3_facebook_likes + actor_1_facebook_likes + gross + num_voted_users + cast_total_facebook_likes  + num_user_for_reviews + budget + title_year + actor_2_facebook_likes + movie_facebook_likes, data = imdb_train, mtry = 5)
+IMDB.rf <- randomForest(imdb_score~num_critic_for_reviews + duration + director_facebook_likes + actor_3_facebook_likes + actor_1_facebook_likes + gross + num_voted_users + cast_total_facebook_likes  + num_user_for_reviews + budget + title_year + actor_2_facebook_likes + movie_facebook_likes, data = IMDB_train, mtry = 5)
 
 #predict on test set
-predict.imdb.rf <- predict(imdb.rf, imdb_test)
+predict.IMDB.rf <- predict(IMDB.rf, IMDB_test)
 
 #RMSE
-sqrt((sum((imdb_test$imdb_score - predict.imdb.rf)^2))/ nrow(imdb_test))
+sqrt((sum((IMDB_test$imdb_score - predict.IMDB.rf)^2))/ nrow(IMDB_test))
 
 #MSE
-mean((predict.imdb.rf - imdb_test$imdb_score)^2)
+mean((predict.IMDB.rf - IMDB_test$imdb_score)^2)
 
-varImpPlot(imdb.rf)
-
-```
-```{r confusionMatrix, warning=FALSE,echo=FALSE,out.width="75%"}
-
-caret::confusionMatrix(predict.imdb.rf, imdb_test$imdb_score)
+varImpPlot(IMDB.rf)
 
 ```
 
 
-We can see that the most important variable is the number of voted users. The reason is quite obvious because the rating only generates when people vote or give reviews for the movies. There might be a good number of people who don't giving reviews. But, there is also a good number of people who vote for their favorite movies which is used to calculate the imdb score. Second most important factor is the duration of the movies. This is quite interesting because this is not something which is easily guessed. However, the logical rationale behind this could be that the long hours movies are generally high budgeted ones with a renowned cast. Therefore, the quality of the movies with longer duration are usually better. The next factor is the facebook likes. Even though this factor is a difficult predictor to assume, we can say that people likes something on facebook when they truly enjoy something. So, they might have a tendency to provide good imdb rating as well.
+We can see that the most important variable is the number of voted users. The reason is quite obvious because the rating only generates when people vote or give reviews for the movies.The second most important factor is the duration of a movie. This is quite interesting because this is not something which is easily thought about. However, the logic behind this could be that the movies with longer duration are generally high budgeted ones with popular star cast. Therefore, the quality of the movies with longer duration are usually better. The third factor is the facebook likes. Even though this factor is a difficult to predict, we can reason that people likes something on facebook only if they truly enjoy something. So, facebook likes could also impact IMDB ratings.
 
-The importance of next three variables, budget, genres and number of user reviews, is very close. A high budgeted movie will typically have a tendency to get high imdb scores because they are usually created with with a lot of hype and promotion. Genres also have an impact because some genres are more attractive to users than others. Typically, action and thriller movies are preferred to many viewers. For obvious reasons, number of user reviews are important. These users directly rate the movies on the imdb website. So, certainly this will be one of the most important factors.
-
+The importance of next three variables, budget, genres and number of user reviews, is very close in quantitative terms.High budgeted movies would typically have a tendency to get high IMDB scores because they are usually created with a lot of hype and promotion. Genres also have an impact because some genres are more attractive to users than others. Typically, action and thriller movies are preferred to many viewers.Also number of user reviews are important as these users directly rate the movies on the IMDB website.
 
 
 # Conclusion
 
-Random Forest took into consideration all the variables from the dataset to understand their impact on the imdb score. Number of voted users is the most important variable for a high imdb score. Followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were amoong the least impactful factors as one would think directors and actors bring in publicity leading to a higher viewership. 
-
+Random Forest took into consideration all the variables from the datas et to understand their impact on the IMDB score.Therefore we conclude that number of voted users is the most important variable for a high IMDB score followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were among the least important factors as one would think that directors and actors bring in publicity leading to high viewership. 
 
 
 
