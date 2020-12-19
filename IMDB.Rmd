@@ -1,6 +1,6 @@
 ---
 title: "Predicting IMBD Scores"
-author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
+author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury (ID: 24126613), Akshita Jain"
 output: 
   html_document: default
   pdf_document: default
@@ -355,7 +355,7 @@ The importance of next three variables, budget, genres and number of user review
 
 # Conclusion
 
+So, based on the visualizations we can conclude that content rating does not have much impact on the imdb score while the imdb score by countries shows number of movies which has lower imdb score are the most in the chart. Like, we explained earlier the most interesting thing we have found from this project is that duratin of movies have very strong effect of imdb scores. As expected, imdb score cannot define the profitability of the movies. 
+
 Random Forest took into consideration all the variables from the datas et to understand their impact on the IMDB score.Therefore we conclude that number of voted users is the most important variable for a high IMDB score followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were among the least important factors as one would think that directors and actors bring in publicity leading to high viewership. 
-
-
 
