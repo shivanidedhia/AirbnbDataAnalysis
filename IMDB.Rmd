@@ -44,8 +44,7 @@ Many factors make a movie successful and profitable. Some of the factors include
 
 We have the IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/imdb-data), which has `r ncol(IMDB)` variables, `r dim(IMDB)[1]` movies across 100 years in `r n_distinct(IMDB$country)` countries. There are many variables in the dataset such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
-We will be using some of the modeling techniques with associated visualizations to identify the most important variables
-that impact the success and ratings of the movie along with the profitability. 
+We will be using some of the modeling techniques with associated visualizations to identify the most important variables that impact the success and ratings of the movie along with the profitability. 
 
 ```{r combine and clean data, warning=FALSE, echo=FALSE}
 imdb <- IMDB[!duplicated(IMDB), ]
