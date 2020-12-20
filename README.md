@@ -12,7 +12,7 @@ The dataset contains 5043 movies and 28 variables
 
 <p align="center">
 
-<img align="center" src= logo.png alt="imdb_logo" height="20" width="20" />
+<img align="center" src= logo.png alt="imdb_logo"/>
 
 </p>
 
@@ -24,6 +24,6 @@ Conclusion
 
 Random Forest plotted by importance
 
-<img align="center" src= chart.png alt="chart" height="20" width="20" />
+<img align="center" src= chart.png alt="chart"/>
 
 </p>
