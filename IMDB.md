@@ -164,22 +164,22 @@ The low R-squared value indicates that IMDB score does not explain much about th
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -4.2436 -0.4715  0.0793  0.6060  2.4186 
+## -4.7935 -0.4665  0.0768  0.6047  2.4301 
 ## 
 ## Coefficients:
 ##                        Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)           4.955e+00  8.346e-02  59.371  < 2e-16 ***
-## duration              1.198e-02  7.832e-04  15.291  < 2e-16 ***
-## num_voted_users       4.145e-06  1.851e-07  22.392  < 2e-16 ***
-## num_user_for_reviews -4.084e-04  6.488e-05  -6.294 3.54e-10 ***
-## budget               -1.068e-11  6.543e-11  -0.163     0.87    
-## gross                -2.044e-09  2.959e-10  -6.908 5.98e-12 ***
+## (Intercept)           4.912e+00  8.549e-02  57.462  < 2e-16 ***
+## duration              1.236e-02  8.032e-04  15.387  < 2e-16 ***
+## num_voted_users       4.231e-06  1.886e-07  22.432  < 2e-16 ***
+## num_user_for_reviews -4.509e-04  6.498e-05  -6.939 4.80e-12 ***
+## budget               -1.128e-11  6.595e-11  -0.171    0.864    
+## gross                -2.049e-09  3.044e-10  -6.733 1.98e-11 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.8837 on 3038 degrees of freedom
-## Multiple R-squared:  0.2954,	Adjusted R-squared:  0.2943 
-## F-statistic: 254.8 on 5 and 3038 DF,  p-value: < 2.2e-16
+## Residual standard error: 0.8895 on 3038 degrees of freedom
+## Multiple R-squared:  0.2972,	Adjusted R-squared:  0.2961 
+## F-statistic:   257 on 5 and 3038 DF,  p-value: < 2.2e-16
 ```
 
 
@@ -189,7 +189,7 @@ Root mean squared error for this linear model is ~ 0.86, which is not considered
 
 
 ```
-## [1] 0.8825598
+## [1] 0.8593004
 ```
 
 
@@ -202,16 +202,16 @@ Random forest will include all the variables from the data set. Variables by imp
 ```
 ##      |      Out-of-bag   |
 ## Tree |      MSE  %Var(y) |
-##   50 |   0.5157    46.63 |
-##  100 |   0.4966    44.90 |
-##  150 |   0.4872    44.05 |
-##  200 |   0.4831    43.68 |
-##  250 |   0.4823    43.60 |
-##  300 |   0.4814    43.52 |
-##  350 |     0.48    43.39 |
-##  400 |   0.4804    43.43 |
-##  450 |   0.4807    43.46 |
-##  500 |   0.4809    43.48 |
+##   50 |   0.5372    47.81 |
+##  100 |   0.5194    46.23 |
+##  150 |   0.5124    45.60 |
+##  200 |   0.5089    45.29 |
+##  250 |   0.5053    44.97 |
+##  300 |    0.504    44.85 |
+##  350 |    0.503    44.76 |
+##  400 |   0.5023    44.70 |
+##  450 |   0.5025    44.72 |
+##  500 |   0.5023    44.70 |
 ```
 
 <img src="IMDB_files/figure-html/random forest-1.png" width="75%" />
@@ -223,7 +223,7 @@ The root mean squared error for the above random forest is ~.76 making it an ave
 
 
 ```
-## [1] 0.7397781
+## [1] 0.6764102
 ```
  
 
@@ -240,11 +240,11 @@ The root mean squared for this model is ~ .67 which is considered to be a good m
 
 
 ```
-## [1] 0.7140525
+## [1] 0.6593568
 ```
 
 ```
-## [1] 0.509871
+## [1] 0.4347514
 ```
 
 ## Conclusion
