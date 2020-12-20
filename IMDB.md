@@ -1,6 +1,6 @@
 
 ## Predicting IMBD Scores
-# Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
+# Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain
 
 ## STA 9750 Final Project
 
