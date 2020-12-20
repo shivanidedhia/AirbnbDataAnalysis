@@ -1,20 +1,8 @@
----
-title: "Predicting IMBD Scores"
-author: "Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain"
-output: 
-  html_document:
-    keep_md: true
-  fig_width: .5
-  fig_height: .5
-  fig.align: center
----
 
-
+## Predicting IMBD Scores
+# Shivani Dedhia, Akhila Pamukuntla, Nafis Chowdhury, Akshita Jain
 
 ## STA 9750 Final Project
-
-
-
 
 ## Introduction
 
@@ -23,8 +11,6 @@ Many factors such as user reviews, budget of the movie, actor's and director's p
 We fetched our data from  IMDB 5000 movie dataset (https://www.kaggle.com/suchitgupta60/IMDB-data), which consists of 5043 movies across 100 years from 66 countries. The data consists 28 variables such as Director, Actors, Duration, Gross, Budget, Genres, Facebook Likes, etc. 
 
 We will be using modeling techniques along with visualizations to identify the most important variable that impacts the success and rating of a movie.
-
-
 
 
 ## Data Exploration
