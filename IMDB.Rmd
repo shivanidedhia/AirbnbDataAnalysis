@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE , dev = "png", dpi=300)
 # Akhila - 24124789
 # Shivani - 24134642
 # Nafis - 24126613
-# Akshita - 
+# Akshita - 24127668
 
 library(readr)
 library(dplyr)
@@ -39,8 +39,10 @@ library(modelr)
 ## STA 9750 Final Project
 
 ```{r introduction, warning=FALSE, echo=FALSE}
-IMDB <- read.csv("IMDM_ratings.csv")
+IMDB <- read.csv("IMDB_ratings.csv")
 ```
+
+
 ## Introduction
 
 Many factors such as user reviews, budget of the movie, actor's and director's popularity etc play role in making a movie successful. IMDB is the world's most popular database designed to help people learn more about movies, TV shows, etc. IMDB plays an important role in measuring the success of a movie by providing ratings considering various factors. This project focuses on which factor has the most impact on the IMDB score of a movie.
@@ -136,7 +138,7 @@ IMDB %>% group_by(imdb_score) %>% filter(imdb_score > 7.5) %>% count(imdb_score)
 
 ## Impact of content rating on IMDB score
 
-The average IMDB score is `r mean(IMDB$imdb_score)`which is considered as a poor score. The content rating with 'R' category has the highest count of `r length(IMDB$content_rating[IMDB$content_rating=='R'])` movies which may be the reason that 'R' has the highest IMDB rating compared to others. However, PG-13 has the second highest count of `r length(IMDB$content_rating[IMDB$content_rating=='PG-13'])` movies with an average IMDB score of less than 6.3. As per this distribution we conclude that content rating does not show a strong impact on the IMDB score of a movie.
+The average IMDB score is `r mean(IMDB$imdb_score)` which is considered as a poor score. The content rating with 'R' category has the highest count of `r length(IMDB$content_rating[IMDB$content_rating=='R'])` movies which may be the reason that 'R' has the highest IMDB rating compared to others. However, PG-13 has the second highest count of `r length(IMDB$content_rating[IMDB$content_rating=='PG-13'])` movies with an average IMDB score of less than 6.3. As per this distribution we conclude that content rating does not show a strong impact on the IMDB score of a movie.
 
 ```{r content_rating chart, warning=FALSE, echo=FALSE,out.width="75%"}
 
@@ -154,7 +156,7 @@ rating_IMDB <- IMDB %>% group_by(content_rating) %>%
 ```
 
 
-## Understanding the distribution of directors and their effect on the IMDB score
+## Distribution of directors and their effect on the IMDB score
 
 We grouped the directors here by the number of movies they directed. Further, we filtered the data to show only directors with movies directed above 10 and below 50 to remove any anomalies in the data. Directors with more movies could have a higher fan following, credibility and success rate possibly leading to a higher IMDB score. 
 
@@ -192,7 +194,7 @@ avg_score_per_director <- data.frame (IMDB %>%
 
 ggplot(aes(x = director_name, y = average_imdb_score), data = avg_score_per_director)+
   geom_point(color="#DAA520") +
-  
+  theme_bw() +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(title="Average IMDB Score by Director",x="Directors",y="Average IMDB Score")
 
@@ -202,8 +204,6 @@ ggplot(aes(x = director_name, y = average_imdb_score), data = avg_score_per_dire
 ## Top 20 movies by IMDB score 
 
 The scatter plot below shows the top 20 movies that have received the highest IMDB scores. Most of the directors have more than one movie rated above 7.5 which is considered to be a good score. These movies have received higher user reviews compared to other movies in the data set. The minimum user reviews are 1000 for these top 20 movies which is significantly higher than the median of 205 user reviews. As per this analysis, user reviews and the number of movies directed has a slight impact on the IMDB score.
-
-`r summary(IMDB$num_user_for_reviews)`
 
 ```{r movie_by_director, warning=FALSE, echo=FALSE, out.width="75%"}
 
@@ -274,7 +274,7 @@ We divide the dataset into two parts with 80% of the data as the training data a
 
 ## Linear Model
 
-The linear model shown below depicts that the number of voted users,the number of critic reviews and the duration impacts IMDB score the most. The R-squared of ~ 0.29 is extremely low which suggests that the relationship between these variables is not linear.
+The linear model has considered the number of voted users,the number of critic reviews and the duration. The r-squared of ~ 0.30 is extremely low which suggests that the relationship between these variables is nont strong positive linear relationship.
 
 The low R-squared value indicates that IMDB score does not explain much about the variation in the dependent variables such as duration, num_voted_users,  num_critic_for_reviews and movie_facebook_likes. Regardless of the variable significance,we can infer that the identified independent variable, even though significant, does not account for much of the mean of the dependent variable. 
 
@@ -344,14 +344,24 @@ predicted.rf = predict(IMDB_rf,IMDB_test)
 ```
 The root mean squared error for the above random forest is `r sqrt((sum((IMDB_test$imdb_score - predicted.rf)^2))/ nrow(IMDB_test))` making it an average model. 
 
-## Random Forest with select variables to reduce the Mean Squared Error
+## Random Forest with select variables
 
-The mean squared error of the model below is `mean((predict.IMDB.rf - IMDB_test$imdb_score)^2)` which is lower than the previous model `mean((predicted.rf - IMDB_test$imdb_score)^2)`. As this model uses only some of the important variables which could result into a lower root mean squared error. 
+The mean squared error of the model below is `r mean((predict.IMDB.rf - IMDB_test$imdb_score)^2)` which is lower than the previous model `r mean((predicted.rf - IMDB_test$imdb_score)^2)`. As this model uses only some of the important variables which could result into a lower root mean squared error. 
 
 
 ```{r random forest II, warning=FALSE,echo=FALSE,out.width="75%"}
 
 IMDB.rf <- randomForest(imdb_score~num_critic_for_reviews + duration + director_facebook_likes + actor_3_facebook_likes + actor_1_facebook_likes + gross + num_voted_users + cast_total_facebook_likes  + num_user_for_reviews + budget + title_year + actor_2_facebook_likes + movie_facebook_likes, data = IMDB_train, mtry = 5)
+
+varImpPlot(IMDB.rf)
+
+```
+
+## Root Mean Squared for the Random Forest
+
+The root mean sqaured for this model is ~ .67 which is considered to be a good model. The difference between the predicted and the actual values is low.
+
+```{r random forest predictions, warning=FALSE,echo=FALSE,out.width="75%"}
 
 #predict on test set
 predict.IMDB.rf <- predict(IMDB.rf, IMDB_test)
@@ -362,19 +372,18 @@ sqrt((sum((IMDB_test$imdb_score - predict.IMDB.rf)^2))/ nrow(IMDB_test))
 #MSE
 mean((predict.IMDB.rf - IMDB_test$imdb_score)^2)
 
-varImpPlot(IMDB.rf)
 
 ```
 
 
 We can see that the most important variable is the number of voted users. The reason is quite obvious because the rating only generates when people vote or give reviews for the movies.The second most important factor is the duration of a movie. This is quite interesting because this is not something which is easily thought about. However, the logic behind this could be that the movies with longer duration are generally high budgeted ones with popular star cast. Therefore, the quality of the movies with longer duration are usually better. The third factor is the facebook likes. Even though this factor is a difficult to predict, we can reason that people likes something on facebook only if they truly enjoy something. So, facebook likes could also impact IMDB ratings.
 
-The importance of next three variables, budget, genres and number of user reviews, is very close in quantitative terms.High budgeted movies would typically have a tendency to get high IMDB scores because they are usually created with a lot of hype and promotion. Genres also have an impact because some genres are more attractive to users than others. Typically, action and thriller movies are preferred to many viewers.Also number of user reviews are important as these users directly rate the movies on the IMDB website.
+The importance of next three variables, budget, genres and number of user reviews, is very close in quantitative terms. High budgeted movies would typically have a tendency to get high IMDB scores because they are usually created with a lot of hype and promotion. Genres also have an impact because some genres are more attractive to users than others. Typically, action and thriller movies are preferred to many viewers.Also number of user reviews are important as these users directly rate the movies on the IMDB website.
 
 
 ## Conclusion
 
-So, based on the visualizations we can conclude that content rating does not have much impact on the imdb score while the imdb score by countries shows number of movies which has lower imdb score are the most in the chart. Like, we explained earlier the most interesting thing we have found from this project is that duratin of movies have very strong effect of imdb scores. As expected, imdb score cannot define the profitability of the movies. 
+So, based on the visualizations we can conclude that content rating does not have much impact on the IMDB score while the IMDB score by countries shows number of movies which has lower IMDB score are the most in the chart. As expected, IMDB score cannot define the profitability of the movies. 
 
-Random Forest took into consideration all the variables from the datas et to understand their impact on the IMDB score.Therefore we conclude that number of voted users is the most important variable for a high IMDB score followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were among the least important factors as one would think that directors and actors bring in publicity leading to high viewership. 
+Random Forest took into consideration all the variables from the dataset to understand their impact on the IMDB score. Therefore we conclude that number of voted users is the most important variable for a high IMDB score followed by duration and facebook likes received by the audience. It is surprising to see, actors and directors names were among the least important factors as one would think that directors and actors bring in publicity leading to high viewership. 
 
