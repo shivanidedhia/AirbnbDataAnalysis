@@ -12,7 +12,7 @@ The dataset contains 5043 movies and 28 variables
 
 <p align="center">
 
-<img align="center" src= logo.png alt="imdb_logo"/>
+<img align="center" src= logo.png alt="imdb_logo" height="80" width="200"/>
 
 </p>
 
