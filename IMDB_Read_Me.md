@@ -1,0 +1,29 @@
+
+<h1 align="center"> IMDB Rating Analysis </h1>
+
+<p align="center">
+R Markdown, Tidy Verse
+<br>
+Final Project in R 
+<br>
+The dataset contains 5043 movies and 28 variables
+</p>
+
+
+<p align="center">
+
+<img align="center" src= IMDB_files/logo.png alt="imdb_logo" height="80" width="200"/>
+
+</p>
+
+<hr>
+
+<p align="center">
+
+Conclusion
+
+Random Forest plotted by importance
+
+<img align="center" src= IMDB_files/chart.png alt="chart"/>
+
+</p>
